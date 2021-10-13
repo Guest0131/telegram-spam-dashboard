@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Admin Panel | Telegram Spam</title>
+    <!-- HTML5 Shim and Respond.js IE11 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 11]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- Favicon icon -->
+    <link rel="icon" href="{{ url_for( 'static', filename='images/favicon.ico')}}" type="image/x-icon">
+    <!-- fontawesome icon -->
+    <link rel="stylesheet" href="{{ url_for( 'static', filename='fonts/fontawesome/css/fontawesome-all.min.css')}}">
+    <!-- animation css -->
+    <link rel="stylesheet" href="{{ url_for( 'static', filename='plugins/animation/css/animate.min.css')}}">
+    <!-- vendor css -->
+    <link rel="stylesheet" href="{{ url_for( 'static', filename='css/style.css')}}">
+    
+    
+
+</head>
+
+<body>
+    <!-- [ Pre-loader ] start -->
+    <div class="loader-bg">
+        <div class="loader-track">
+            <div class="loader-fill"></div>
+        </div>
+    </div>
+    <!-- [ Pre-loader ] End -->
+
+    <!-- [ Header ] start -->
+    <header class="navbar navbar-dark pcoded-header navbar-expand-lg"
+        style="margin: 0; background-color: rgba(104, 117, 143, 0.6); width: 100%; padding:0 5%">
+
+        <a href="index.html" class="b-brand">
+            <span class="b-title">Telegram Spam Dashboard</span>
+        </a>
+
+        <a class="mobile-menu" id="mobile-header" href="javascript:">
+            <i class="feather icon-more-horizontal"></i>
+        </a>
+        <div class="collapse navbar-collapse" style="background-color: rgba(104, 117, 143, 0);">
+
+            <ul class="navbar-nav ml-auto">
+                <li>
+                    <div class="dropdown drp-user">
+                        <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon feather icon-settings" style="color:rgba(255, 255, 255, 0.877)"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right profile-notification">
+                            <div class="pro-head" style="background-color: darkgray;">
+                                <img src="{{ url_for( 'static', filename='images/user/user-anon.jpg')}}"
+                                    class="img-radius" alt="User-Profile-Image">
+                                <span>{{ username }}</span>
+
+                                <a href="/logout" class="dud-logout" title="Выйти">
+                                    <i class="feather icon-log-out"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <!-- [ Header ] end -->
+
+    <!-- [ Main Content ] start -->
+
+
+    <div class="pcoded-wrapper">
+        <div class="pcoded-content">
+            <div class="pcoded-inner-content">
+                <!-- [ breadcrumb ] start -->
+
+                <!-- [ breadcrumb ] end -->
+                <div class="main-body">
+                    <div class="page-wrapper">
+                        <!-- [ Main Content ] start -->
+                        <div class="row">
+
+                            <!--[ Active bots ] start-->
+                            <div class="card col-xl-8 col-md-12 m-b-30">
+                                <div class="tab-pane fade active show" id="profile" role="tabpanel"
+                                    aria-labelledby="profile-tab">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Phone</th>
+                                                <th>API_ID</th>
+                                                <th>API_HASH</th>
+                                                <th>MESSAGE_COUNT</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for bot in data %}
+                                            <tr>
+                                                <td>
+                                                    <h6 class="m-0"><img class="rounded-circle  m-r-10"
+                                                            style="width:40px;"
+                                                            src="{{ url_for( 'static', filename='images/telegram-icon.png')}}"
+                                                            alt="activity-user">{{ bot['username'] }}</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="m-0">{{ bot['phone'] }}</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="m-0">{{ bot['api_id'] }}</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="m-0">{{ bot['api_hash'] }}</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="m-0">
+                                                        {{ bot['count_message'] }}
+                                                        
+                                                    </h6>
+                                                    
+                                                </td>
+                                                <td>
+                                                    
+
+                                                    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#Modal{{ bot['api_id'] }}">
+                                                        Обновить настройки
+                                                      </button>
+                                                      
+                                                      <!-- [Modal] start -->
+                                                      <div class="modal fade" id="Modal{{ bot['api_id'] }}" tabindex="-1" aria-labelledby="exampleModal{{ bot['api_id'] }}" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                          <div class="modal-content">
+                                                            <div class="modal-header">
+                                                              <h5 class="modal-title" id="exampleModal{{ bot['api_id'] }}">Изменение настроек профиля</h5>
+                                                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                              <form method="post" action='/update_settings' enctype="multipart/form-data">
+                                                                <div class="form-group">
+                                                                    <label for="firstName">First Name</label>
+                                                                    <input name="firstName" type="text" class="form-control" id="firstName"
+                                                                        value="{{ bot['first_name'] }}">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="lastName">Last Name</label>
+                                                                    <input name="lastName" type="text" class="form-control" id="lastName"
+                                                                        value="{{ bot['last_name'] }}">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="about">About</label>
+                                                                    <input name="about" type="text" class="form-control" id="about"
+                                                                        value="{{ bot['about'] }}">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="username">Username</label>
+                                                                    <div class="container">
+                                                                        <div class="row">
+                                                                            <div class="col-10">
+                                                                                <input name="username" type="text" class="form-control" id="username{{ bot['api_id'] }}"
+                                                                                value="{{ bot['username'] }}" style="margin-left: -15px;"> 
+                                                                            </div>
+                                                                            <div class="col-2">
+                                                                                <button id="check{{ bot['api_id'] }}" type="button" class="btn btn-light btn-floating" onclick="checkUsername('{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">
+                                                                                    <i class="fas fa-check" style="width: auto;height: auto;margin: auto;"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    
+                                                                        
+                                                                    </div>
+                                                                    
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="photoProfile">Photo Profile</label></br>
+                                                    
+                                                                    <div class="custom-file">
+                                                                        <input name="photoProfile" type="file" class="custom-file-input"
+                                                                            id="inputGroupFile01"
+                                                                            aria-describedby="inputGroupFileAddon01">
+                                                                        <label class="custom-file-label"
+                                                                            for="inputGroupFile01">Choose file</label>
+                                                                    </div>
+                                                                </div>
+                                                                <input name='api_id' hidden="true" type="hidden" value="{{ bot['api_id'] }}" />
+                                                                <input name='api_hash' hidden="true" type="hidden" value="{{ bot['api_hash'] }}" />
+                                                                <input name='session_file' hidden="true" type="hidden" value="{{ bot['session_file'] }}" />
+                                                                <input type="submit" class="btn btn-dark" value="Обновить настройки"/>
+                                                                <button type="button" class="btn btn-warning" onclick="restart_bot('{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">
+                                                                    Рестарт
+                                                                </button>
+                                                            </form>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                      <!-- [Modal] end-->
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                            <!--[ Active bots ] end-->
+
+                            <!-- [ statistics year chart ] start -->
+                            <div class="col-xl-4 col-md-6">
+                                <div class="card card-event">
+                                    <div class="card-block">
+                                        <div class="row align-items-center justify-content-center">
+                                            <div class="col">
+                                                <h5 class="m-0">Количество ботов</h5>
+                                            </div>
+
+                                        </div>
+                                        <h2 class="mt-3 f-w-300"> {{ bots_count }}</h2>
+                                        <button id="add_bot" type="button" class="btn btn-dark" data-toggle="collapse"
+                                            data-target="#collapseAdd" aria-expanded="false" aria-controls="collapseAdd">
+                                            <span>Добавить бота</span>
+                                        </button>
+                                        <div class="collapse" id="collapseAdd">
+                                            <div class="card-body"
+                                                style="background-color: rgba(169, 169, 169, 0.425);border-radius: 5px;">
+                                                <form method="post" action="/add_bot" enctype="multipart/form-data">
+                                                    <div class="form-group">
+                                                        <label for="InputApiId">API ID</label>
+                                                        <input name="api_id" type="text" class="form-control" id="InputApiId"
+                                                            placeholder="Enter API ID">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="InputApiHash">API Hash</label>
+                                                        <input name="api_hash" type="text" class="form-control" id="InputApiHash"
+                                                            placeholder="Enter API Hash">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="inputGroupFile01">Session File</label>
+
+                                                        <div class="custom-file">
+                                                            <input name="session_file" type="file" class="custom-file-input"
+                                                                id="inputGroupFile01"
+                                                                aria-describedby="inputGroupFileAddon01">
+                                                            <label class="custom-file-label"
+                                                                for="inputGroupFile01">Choose file</label>
+                                                        </div>
+                                                    </div>
+                                                    <input type="submit" class="btn btn-dark" value="Добавить"/>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-block border-bottom">
+                                        <div class="row d-flex align-items-center">
+                                            <div class="col-auto">
+                                                <i class="feather icon-message-square f-30 text-c"></i>
+                                            </div>
+                                            <div class="col">
+                                                <h3 class="f-w-300">{{ message_count }}</h3>
+                                                <span class="d-block text-uppercase">Всего отправленных сообщений</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-block border-bottom">
+                                        <div class="col-auto">
+                                            <div class="form-group">
+                                                <label for="exampleFormControlTextarea1">Отправляемый текст</label>
+                                                <textarea id="responce_text" name="responce_text" class="form-control" id="exampleFormControlTextarea1" rows="3">{{response}}</textarea>
+                                            </div>
+                                            <button class="btn btn-dark" onclick="updateText()">Обновить текст</button>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <!-- [ statistics year chart ] end -->
+
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+    <script>
+        function restart_bot(api_id, api_hash, session_file) {
+            $.ajax({
+                url: '/api',
+                method: 'POST',
+                data: {
+                    'action' : 'start_bot',
+                    'api_id' : api_id,
+                    'api_hash' : api_hash,
+                    'session_file' : session_file
+                },
+                success: function(data) {
+                    alert(data)
+                }
+            })
+        }
+
+        function updateText() {
+            $.ajax({
+                url: '/api',
+                method: 'POST',
+                data: {
+                    'action' : 'change_responce_text',
+                    'text' : $("#responce_text")[0].value,
+                },
+                success: function(data) {
+                    alert(data)
+                }
+            })
+        }
+
+        function checkUsername(api_id, api_hash, session_file) {
+            var button = $('#check'+api_id)[0]
+            var usernameInput = $('#username' + api_id)[0]
+            button.style="background-color:gray"
+            usernameInput.style="margin-left: -15px; border-color:gray"
+
+            $.ajax({
+                url: '/api',
+                method: 'POST',
+                data: {
+                    'action' : 'check_username',
+                    'api_id' : api_id,
+                    'api_hash' : api_hash,
+                    'session_file' : session_file,
+                    'username' : usernameInput.value
+                },
+                success: function(data) {
+                    console.log(data)
+                    if (data == "true") {
+                        button.style="background-color:#03aa03bd"
+                        usernameInput.style="margin-left: -15px; border-color:#03aa03bd"
+                    } else {
+                        button.style="background-color:#ff0000bd"
+                        usernameInput.style="margin-left: -15px; border-color:#ff0000bd"
+                    }
+                }
+            })
+        }
+        
+    </script>
+
+    <!-- Required Js -->
+    <script src="{{ url_for( 'static', filename='js/vendor-all.min.js')}}"></script>
+    <script src="{{ url_for( 'static', filename='plugins/bootstrap/js/bootstrap.min.js')}}"></script>
+    <script src="{{ url_for( 'static', filename='js/pcoded.min.js')}}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+</body>
+
+</html>

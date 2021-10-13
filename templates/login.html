@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Login | Telegram Bot Dashboard</title>
+    
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+
+    <!-- Favicon icon -->
+    <link rel="icon" href="{{ url_for( 'static', filename='images/favicon.ico')}}" type="image/x-icon">
+    <!-- fontawesome icon -->
+    <link rel="stylesheet" href="{{ url_for( 'static', filename='fonts/fontawesome/css/fontawesome-all.min.css')}}">
+    <!-- animation css -->
+    <link rel="stylesheet" href="{{ url_for( 'static', filename='plugins/animation/css/animate.min.css')}}">
+    <!-- vendor css -->
+    <link rel="stylesheet" href="{{ url_for( 'static', filename='css/style.css')}}">
+
+</head>
+
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-content">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="feather icon-unlock auth-icon"></i>
+                    </div>
+                    <h3 class="mb-4">Login</h3>
+                    <form method="post" action="{{ url_for('login') }}">
+                        <div class="input-group mb-3">
+                            <input type="login" class="form-control" placeholder="Login" name="login">
+                        </div>
+                        <div class="input-group mb-4">
+                            <input type="password" class="form-control" placeholder="Password" name="password">
+                        </div>
+
+                        <button class="btn btn-primary shadow-2 mb-4">Login</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Required Js -->
+    <script src="{{ url_for( 'static', filename='js/vendor-all.min.js')}}"></script>
+    <script src="{{ url_for( 'static', filename='plugins/bootstrap/js/bootstrap.min.js')}}"></script>
+
+</body>
+
+</html>
