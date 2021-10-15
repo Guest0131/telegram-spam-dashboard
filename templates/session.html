@@ -6,16 +6,17 @@
     <!-- Meta -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-
-
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- Favicon icon -->
-    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="{{ url_for( 'static', filename='images/favicon.ico')}}" type="image/x-icon">
     <!-- fontawesome icon -->
-    <link rel="stylesheet" href="assets/fonts/fontawesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="{{ url_for( 'static', filename='fonts/fontawesome/css/fontawesome-all.min.css')}}">
     <!-- animation css -->
-    <link rel="stylesheet" href="assets/plugins/animation/css/animate.min.css">
+    <link rel="stylesheet" href="{{ url_for( 'static', filename='plugins/animation/css/animate.min.css')}}">
     <!-- vendor css -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="{{ url_for( 'static', filename='css/style.css')}}">
 
 </head>
 
@@ -71,25 +72,28 @@
                 $('div[class="form-group"]').after(`
                 <div class="input-group mb-4">
                     <input name="tg_code" type="text" class="form-control" placeholder="TG_CODE" required>
-                    <input name="session" type="text" class="form-control" hidden />
                 </div>
                 `)
             }
-            var session = $('input[name="session"]')
-
             $.ajax({
-                
+                url: '/api',
+                method: 'POST',
+                data: {
+                    'action' : 'create_session',
+                    'api_id' : api_id,
+                    'api_hash' : api_hash,
+                    'phone' : phone
+                }
             })
 
         }
-
-
     </script>
     <!-- Button action [End] -->
 
     <!-- Required Js [Start] -->
-    <script src="assets/js/vendor-all.min.js"></script>
-    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ url_for( 'static', filename='js/vendor-all.min.js')}}"></script>
+    <script src="{{ url_for( 'static', filename='plugins/bootstrap/js/bootstrap.min.js')}}"></script>
+    <script src="{{ url_for( 'static', filename='js/pcoded.min.js')}}"></script>
     <!-- Required Js [End]  -->
 
 

@@ -7,7 +7,6 @@ from pprint import pprint
 
 
 api_id, api_hash, session_file = int(sys.argv[1]), sys.argv[2], sys.argv[3]
-open('C:/Users/shado/Desktop/spam/log.txt', 'w').write(str(api_id))
 
 # Load config 
 config = cp.ConfigParser()
@@ -18,19 +17,7 @@ client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
 db = client['tg']['accounts']
 
 clientTg = TelegramClient(session_file, api_id, api_hash)
-
-# for chat in open('static/chats.txt', 'r').read().split('\n'):
-#     try:
-#         clientTg(functions.channels.JoinChannelRequest(
-#             channel=chat[1:]
-#         ))
-
-#         time.sleep(random.randint(5,10))
-#     except:
-#         pass
-        
-
-
+clientTg.start()
 client_info = clientTg(GetFullUserRequest(id=clientTg.get_me().id))
 
 

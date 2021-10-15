@@ -204,4 +204,31 @@ class Telegram:
                 ]
             )
 
+    @staticmethod
+    def create_tmp_session(api_id, api_hash, phone):
+        subprocess.Popen(
+                [
+                    sys.executable, 'modules/create_session.py',
+                    str(api_id), api_hash, phone
+                ]
+            )
+
+    @staticmethod
+    def send_code_request(api_id, api_hash, code):
+        # Load config 
+        config = cp.ConfigParser()
+        config.read('config.ini')
+
+        # Create connection
+        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        db = client['tg']['tmp']
+        
+        db.update_one(
+            {'api_id' : int(api_id), 'api_hash': api_hash},
+            {'$set' : {
+                'code' : code
+            }})
+
+        client.close()
+
         

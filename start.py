@@ -42,20 +42,25 @@ def logout():
     session.clear()
     return redirect(url_for('main'))
 
+@app.route('/create_bot')
+def create_bot():
+    return render_template('session.html')
+
 @app.route('/add_bot', methods=['POST'])
 def addbot():
     if request.method == 'POST':
-        if 'session_file' in request.files:
-            file = request.files['session_file']
-            if 'api_id' and 'api_hash' in request.form:
-                api_id, api_hash = request.form['api_id'], request.form['api_hash']
-                session_file = 'sessions/{}_{}.session'.format(api_id, api_hash)
-                file.save(session_file)
+        api_id, api_hash, tg_code = request.form['api_id'], request.form['api_hash'], request.form['tg_code']
+        Telegram.send_code_request(api_id, api_hash, tg_code)
+        time.sleep(3)
 
-                tg = Telegram(api_id, api_hash, session_file)
-                tg.create_on_db()
-                time.sleep(2)
-                tg.run(session.get('auth'))
+        session_file = 'sessions/{}_{}.session'.format(api_id, api_hash)
+        try:
+            tg = Telegram(api_id, api_hash, session_file)
+            tg.create_on_db()
+            time.sleep(2)
+            tg.run(session.get('auth'))
+        except:
+            pass
 
 
     return redirect(url_for('main'))
@@ -127,6 +132,12 @@ def api_manager():
             result = tg.check_username(username)
             tg.run(session.get('auth'))
             return 'true' if result else 'false'
+
+        # Create session (tmp record on db)
+        if action == 'create_session':
+            api_id, api_hash, phone = request.form['api_id'], request.form['api_hash'], request.form['phone']
+            Telegram.create_tmp_session(api_id, api_hash, phone)
+
 
     return 'false'
 
