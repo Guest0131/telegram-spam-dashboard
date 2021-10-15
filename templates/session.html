@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Add new bot</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+
+
+    <!-- Favicon icon -->
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+    <!-- fontawesome icon -->
+    <link rel="stylesheet" href="assets/fonts/fontawesome/css/fontawesome-all.min.css">
+    <!-- animation css -->
+    <link rel="stylesheet" href="assets/plugins/animation/css/animate.min.css">
+    <!-- vendor css -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-content">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="feather icon-user-plus auth-icon"></i>
+                    </div>
+                    <h3 class="mb-4">Создание бота</h3>
+                    <form method="post" action='/add_bot'>
+                        <div class="input-group mb-3">
+                            <input name="api_id" type="text" class="form-control" placeholder="API_ID" required>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input name='api_hash' type="text" class="form-control" placeholder="API_HASH" required>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-6">
+                                    <input name="phone" type="text" class="form-control mb-4" placeholder="Phone number"
+                                        required>
+                                </div>
+                                <div class="col-2">
+                                    <button type="button" class="btn info shadow-2 mb-2"
+                                        onclick="createTmpSession()">Получить код</button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <input type="submit" class="btn btn-dark shadow-2 mb-4" value="Добавить бота"
+                            style="width:100%;" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Button action [Start] -->
+    <script>
+        function createTmpSession() {
+            var button = $('button')[0];
+
+            var api_id = $('input[name="api_id"]')[0].value;
+            var api_hash = $('input[name="api_hash"]')[0].value;
+            var phone = $('input[name="phone"]')[0].value;
+
+            if ($('input[name="tg_code"]').length == 0) {
+                $('div[class="form-group"]').after(`
+                <div class="input-group mb-4">
+                    <input name="tg_code" type="text" class="form-control" placeholder="TG_CODE" required>
+                    <input name="session" type="text" class="form-control" hidden />
+                </div>
+                `)
+            }
+            var session = $('input[name="session"]')
+
+            $.ajax({
+                
+            })
+
+        }
+
+
+    </script>
+    <!-- Button action [End] -->
+
+    <!-- Required Js [Start] -->
+    <script src="assets/js/vendor-all.min.js"></script>
+    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <!-- Required Js [End]  -->
+
+
+</body>
+
+</html>
