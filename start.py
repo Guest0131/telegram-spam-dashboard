@@ -1,4 +1,4 @@
-from  flask import Flask, render_template, request, flash, redirect, url_for, session
+from  flask import Flask, render_template, request, flash, redirect, url_for, session, send_from_directory
 from modules.user import User
 from modules.telegram import Telegram
 
@@ -13,7 +13,7 @@ def main():
     if 'auth' not in session or session.get('auth') == False:
         return redirect(url_for('login'))
     else:
-        bots_data = Telegram.get_bots_data()
+        bots_data = Telegram.get_bots_data(session.get('auth'))
 
         config = cp.ConfigParser()
         config.read('config.ini')
@@ -56,7 +56,7 @@ def addbot():
         session_file = 'sessions/{}_{}.session'.format(api_id, api_hash)
         try:
             tg = Telegram(api_id, api_hash, session_file)
-            tg.create_on_db()
+            tg.create_on_db(session.get('auth'))
             time.sleep(2)
             tg.run(session.get('auth'))
         except:
@@ -73,7 +73,6 @@ def update_settings():
             firstName, lastName, about, username = request.form['firstName'], request.form['lastName'],request.form['about'],request.form['username']
             api_id, api_hash, session_file = request.form['api_id'], request.form['api_hash'], request.form['session_file']
         except:
-            print('Fail')
             return redirect(url_for('main'))
 
         tg = Telegram(api_id, api_hash, session_file)
@@ -82,7 +81,7 @@ def update_settings():
 
         if 'photoProfile' in request.files and request.files['photoProfile'].filename != '':
             file = request.files['photoProfile']
-            photo_path = 'tmp_data/photo_{}.{}'.format(
+            photo_path = 'photo_data/photo_{}.{}'.format(
                 api_id, file.filename.split('.')[-1]
             )
             file.save(photo_path)
@@ -111,8 +110,8 @@ def api_manager():
         action = request.form['action']
 
         # Switch action
-        if action == 'change_responce_text':
-            User.update_response(session['auth'], request.form['text'])
+        if action == 'update_response':
+            User.update_response(session['auth'], request.form['text'], request.form['start'], request.form['end'])
             return 'true'
 
         # (Re-)start bot
@@ -155,11 +154,20 @@ def api_manager():
             api_id, api_hash, phone = request.form['api_id'], request.form['api_hash'], request.form['phone']
             Telegram.create_tmp_session(api_id, api_hash, phone)
 
+        # Download list chats
+        if action == 'get_list_chats':
+            api_id, api_hash, session_file = request.form['api_id'], request.form['api_hash'], request.form['session_file']
+            tg = Telegram(api_id, api_hash, session_file)
+            return tg.get_chats_list()
+
 
     return 'false'
 
+@app.route('/statistics/<path:filename>', methods=['GET', 'POST'])
+def download_statistic(filename):
+    return send_from_directory(directory='./statistics', path=filename)
             
 
 
 if __name__ == '__main__':
-    app.run(port=80, debug=True)
+    app.run(port=80)

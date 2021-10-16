@@ -82,12 +82,14 @@ class User:
         return data['response'] if data is not None and 'response' in data else {'text': 'Обновите текст', 'start' : 0, 'end' : 10}
 
     @staticmethod
-    def update_response(login, text):
+    def update_response(login, text, start, end):
         """
         Update response text
 
         Args:
             login ([string]): Admin login
+            start ([int]): Start random timeout
+            end ([int]): End random timeout
         """
         # Load config 
         config = cp.ConfigParser()
@@ -101,7 +103,11 @@ class User:
             { 'login':login },
             { 
                 '$set' : {
-                'response' : text
+                'response' : {
+                    'text' : text,
+                    'start': int(start),
+                    'end' : int(end)
+                }
                 }
             })
         client.close()

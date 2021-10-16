@@ -190,7 +190,7 @@
                                                                 <input type="submit" class="btn btn-dark" value="Обновить настройки"/>
                                                                 
                                                                 <div class="btn-group mb-2 mr-2">
-                                                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Методы</button>
+                                                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Функции</button>
                                                                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 42px, 0px); top: 0px; left: 0px; will-change: transform;">
                                                                         <button type="button" class="dropdown-item" onclick="bot_action('restart_bot','{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">
                                                                             Рестарт
@@ -200,6 +200,10 @@
                                                                         </button>
                                                                         <button type="button" class="dropdown-item" onclick="bot_action('stop_bot','{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">
                                                                             Остановить
+                                                                        </button>
+                                                                        <div class="dropdown-divider"></div>
+                                                                        <button type="button" class="dropdown-item" onclick="download_chat_list('{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">
+                                                                            Получить список чатов
                                                                         </button>
                                                                     </div>
                                                                 </div>
@@ -259,24 +263,17 @@
                                                 <label for="exampleFormControlTextarea1">Отправляемый текст</label>
                                                 <textarea id="responce_text" name="responce_text" class="form-control" id="exampleFormControlTextarea1" rows="3">{{response['text']}}</textarea>
                                             </div>
-                                            <button class="btn btn-dark" onclick="updateText()">Обновить</button>
                                         </div>
-                                    </div>
-                                    <!-- text update [end] -->
-                                    
-                                    <!-- time out range update [start] -->
-                                    <div class="card-block border-bottom">
                                         <div class="col-auto">
                                             <div class="form-group">
                                                 <label >Задержка на отклик сообщения</label></br>
                                                 <input type="number"  name="responce_start" class="form-control" id="exampleFormControlTextarea1" value="{{response['start']}}" style="width:40%; float: left; margin-right:10%;">
                                                 <input type="number"  name="responce_end" class="form-control" value="{{response['end']}}" style="width:40%; float:none">
                                             </div>
-                                            <button class="btn btn-dark" onclick="updateText()">Обновить</button>
+                                            <button class="btn btn-dark" onclick="updateResponse()">Обновить</button>
                                         </div>
                                     </div>
-
-                                    <!-- time out range update [start] -->
+                                    <!-- text update [end] -->
                                     
                                 </div>
                             </div>
@@ -293,6 +290,28 @@
     </div>
     <!-- [ Main Content ] end -->
     <script>
+        function download_chat_list(api_id, api_hash, session_file) {
+            $.ajax({
+                url: '/api',
+                method: 'POST',
+                data: {
+                    'action' : 'get_list_chats',
+                    'api_id' : api_id,
+                    'api_hash' : api_hash,
+                    'session_file' : session_file
+                },
+                success: function(data) {
+                    if (data != 'false') {
+                        var link = document.createElement('a')
+                        link.setAttribute('href', window.location.origin + '/' + data)
+                        link.setAttribute('download', 'chats.txt')
+                        link.click()
+                    }
+                }
+            })
+            
+        }
+
         function bot_action(action, api_id, api_hash, session_file) {
             $.ajax({
                 url: '/api',
@@ -312,13 +331,15 @@
             })
         }
 
-        function updateText() {
+        function updateResponse() {
             $.ajax({
                 url: '/api',
                 method: 'POST',
                 data: {
-                    'action' : 'change_responce_text',
+                    'action' : 'update_response',
                     'text' : $("#responce_text")[0].value,
+                    'start' : $('input[name="responce_start"]')[0].value,
+                    'end' : $('input[name="responce_end"]')[0].value,
                 },
                 success: function(data) {
                     alert(data)
@@ -362,7 +383,7 @@
     <script src="{{ url_for( 'static', filename='plugins/bootstrap/js/bootstrap.min.js')}}"></script>
     <script src="{{ url_for( 'static', filename='js/pcoded.min.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-
+    <script src="{{ url_for( 'static', filename='js/jquery.fileDownload.js')}}"></script>
 </body>
 
 </html>

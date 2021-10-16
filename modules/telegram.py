@@ -19,9 +19,12 @@ class Telegram:
         self.api_id = int(api_id)
         self.api_hash = api_hash
         
-    def create_on_db(self):
+    def create_on_db(self, owner):
         """
         Register on db
+
+        Args:
+            owner ([string]): Owner login
         """
         # Load config 
         config = cp.ConfigParser()
@@ -32,7 +35,7 @@ class Telegram:
         db = client['tg']['accounts']
 
         if db.find_one({'api_id' : self.api_id, 'api_hash' : self.api_hash}) == None:
-            subprocess.Popen([sys.executable, 'modules/create_on_db_tg.py', str(self.api_id), self.api_hash, self.session_file])
+            subprocess.Popen([sys.executable, 'modules/create_on_db_tg.py', str(self.api_id), self.api_hash, self.session_file, owner])
         client.close()
 
     def run(self, login):
@@ -142,11 +145,13 @@ class Telegram:
         return int(query_resp['pid']) if query_resp is not None and 'pid' in query_resp else None
         
     @staticmethod
-    def get_bots_data():
+    def get_bots_data(login):
         #TODO: Нужно чекать на бан аккаунта
         """
         Get list data about bots
 
+        Args:
+            login ([string]): Owner login
         Returns:
             [type]: [description]
         """
@@ -158,7 +163,7 @@ class Telegram:
         client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
         db = client['tg']['accounts']
 
-        return list(db.find({}))
+        return list(db.find({'owner_login' : login}))
 
 
     def check_username(self, username):
@@ -257,4 +262,28 @@ class Telegram:
         client.close()
         
 
+    def get_chats_list(self):
+        """
+        Get chats list path
+
+        Returns:
+            [string]: Path to data file
+        """
+        try:
+            os.remove('statistics/chats_data_{}.txt'.format(self.api_id))
+            print('Remove old chat list')
+        except:
+            pass
+
+        subprocess.Popen(
+                [
+                    sys.executable, 'modules/telegram_get_chat_list.py',
+                    str(self.api_id), self.api_hash, self.session_file
+                ]
+            )
+        
+        time.sleep(2)
+
+        
+        return 'statistics/chats_data_{}.txt'.format(self.api_id)
         
