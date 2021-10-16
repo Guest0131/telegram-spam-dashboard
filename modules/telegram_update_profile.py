@@ -4,7 +4,7 @@ from telethon.tl.functions.users import GetFullUserRequest
 from pymongo import MongoClient
 import sys, configparser as cp
 
-
+print(sys.argv)
 with sync.TelegramClient(sys.argv[3], int(sys.argv[1]), sys.argv[2]) as client:
     try:
         # Update first_name, last_name, about

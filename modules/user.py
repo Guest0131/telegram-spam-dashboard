@@ -79,7 +79,7 @@ class User:
 
         data = db.find_one({'login':login})
         client.close()
-        return data['response'] if data is not None and 'response' in data else 'Hello World'
+        return data['response'] if data is not None and 'response' in data else {'text': 'Обновите текст', 'start' : 0, 'end' : 10}
 
     @staticmethod
     def update_response(login, text):

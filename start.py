@@ -73,6 +73,7 @@ def update_settings():
             firstName, lastName, about, username = request.form['firstName'], request.form['lastName'],request.form['about'],request.form['username']
             api_id, api_hash, session_file = request.form['api_id'], request.form['api_hash'], request.form['session_file']
         except:
+            print('Fail')
             return redirect(url_for('main'))
 
         tg = Telegram(api_id, api_hash, session_file)
@@ -100,7 +101,7 @@ def update_settings():
 
         tg.run(session.get('auth'))
 
-
+    time.sleep(2)
     return redirect(url_for('main'))
 
 
@@ -115,12 +116,28 @@ def api_manager():
             return 'true'
 
         # (Re-)start bot
-        if action == 'start_bot':
+        if action == 'restart_bot':
             api_id, api_hash, session_file = request.form['api_id'], request.form['api_hash'], request.form['session_file']
             tg = Telegram(api_id, api_hash, session_file)            
             tg.run(session.get('auth'))
 
-            
+            return 'true'
+
+        # Stop bot
+        if action == 'stop_bot':
+            api_id, api_hash, session_file = request.form['api_id'], request.form['api_hash'], request.form['session_file']
+            tg = Telegram(api_id, api_hash, session_file)            
+            tg.stop(session.get('auth'))
+
+            return 'true'
+
+        # Drop bot
+        if action == 'drop_bot':
+            api_id, api_hash, session_file = request.form['api_id'], request.form['api_hash'], request.form['session_file']
+            tg = Telegram(api_id, api_hash, session_file)
+            tg.stop(session.get('auth'))            
+            tg.drop_me()
+
             return 'true'
 
         # Check username
@@ -145,4 +162,4 @@ def api_manager():
 
 
 if __name__ == '__main__':
-    app.run(port=80)
+    app.run(port=80, debug=True)

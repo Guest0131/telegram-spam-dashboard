@@ -125,8 +125,8 @@
                                                 <td>
                                                     
 
-                                                    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#Modal{{ bot['api_id'] }}">
-                                                        Обновить настройки
+                                                    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#Modal{{ bot['api_id'] }}" style="width: 45px;height: 45px;">
+                                                        <i class="icon feather icon-settings" style="color:rgba(255, 255, 255, 0.877); float: right;margin-right: -6px;"></i>
                                                       </button>
                                                       
                                                       <!-- [Modal] start -->
@@ -164,7 +164,7 @@
                                                                             </div>
                                                                             <div class="col-2">
                                                                                 <button id="check{{ bot['api_id'] }}" type="button" class="btn btn-light btn-floating" onclick="checkUsername('{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">
-                                                                                    <i class="fas fa-check" style="width: auto;height: auto;margin: auto;"></i>
+                                                                                    <i class="feather icon-globe" style="width: auto;height: auto;margin: auto;"></i>
                                                                                 </button>
                                                                             </div>
                                                                         </div>
@@ -188,9 +188,21 @@
                                                                 <input name='api_hash' hidden="true" type="hidden" value="{{ bot['api_hash'] }}" />
                                                                 <input name='session_file' hidden="true" type="hidden" value="{{ bot['session_file'] }}" />
                                                                 <input type="submit" class="btn btn-dark" value="Обновить настройки"/>
-                                                                <button type="button" class="btn btn-warning" onclick="restart_bot('{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">
-                                                                    Рестарт
-                                                                </button>
+                                                                
+                                                                <div class="btn-group mb-2 mr-2">
+                                                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Методы</button>
+                                                                    <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 42px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                                                        <button type="button" class="dropdown-item" onclick="bot_action('restart_bot','{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">
+                                                                            Рестарт
+                                                                        </button>
+                                                                        <button type="button" class="dropdown-item" onclick="bot_action('drop_bot','{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">
+                                                                            Удалить
+                                                                        </button>
+                                                                        <button type="button" class="dropdown-item" onclick="bot_action('stop_bot','{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">
+                                                                            Остановить
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
                                                             </form>
                                                             </div>
                                                           </div>
@@ -209,7 +221,7 @@
                             </div>
                             <!--[ Active bots ] end-->
 
-                            <!-- [ statistics year chart ] start -->
+                            <!-- [ statistics  chart ] start -->
                             <div class="col-xl-4 col-md-6">
                                 <div class="card card-event">
                                     <div class="card-block">
@@ -226,6 +238,7 @@
                                     </div>
                                 </div>
                                 <div class="card">
+                                    <!-- statistics [start] -->
                                     <div class="card-block border-bottom">
                                         <div class="row d-flex align-items-center">
                                             <div class="col-auto">
@@ -237,23 +250,40 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- statistics [end] -->
+
+                                    <!-- text update [start] -->
                                     <div class="card-block border-bottom">
                                         <div class="col-auto">
                                             <div class="form-group">
                                                 <label for="exampleFormControlTextarea1">Отправляемый текст</label>
-                                                <textarea id="responce_text" name="responce_text" class="form-control" id="exampleFormControlTextarea1" rows="3">{{response}}</textarea>
+                                                <textarea id="responce_text" name="responce_text" class="form-control" id="exampleFormControlTextarea1" rows="3">{{response['text']}}</textarea>
                                             </div>
-                                            <button class="btn btn-dark" onclick="updateText()">Обновить текст</button>
+                                            <button class="btn btn-dark" onclick="updateText()">Обновить</button>
                                         </div>
                                     </div>
+                                    <!-- text update [end] -->
+                                    
+                                    <!-- time out range update [start] -->
+                                    <div class="card-block border-bottom">
+                                        <div class="col-auto">
+                                            <div class="form-group">
+                                                <label >Задержка на отклик сообщения</label></br>
+                                                <input type="number"  name="responce_start" class="form-control" id="exampleFormControlTextarea1" value="{{response['start']}}" style="width:40%; float: left; margin-right:10%;">
+                                                <input type="number"  name="responce_end" class="form-control" value="{{response['end']}}" style="width:40%; float:none">
+                                            </div>
+                                            <button class="btn btn-dark" onclick="updateText()">Обновить</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- time out range update [start] -->
                                     
                                 </div>
                             </div>
-                            <!-- [ statistics year chart ] end -->
+                            <!-- [ statistics chart ] end -->
 
-                            <!-- [ Main Content ] end -->
                         </div>
-                    
+                         <!-- [ Main Content ] end -->
 
 
                     </div>
@@ -263,18 +293,21 @@
     </div>
     <!-- [ Main Content ] end -->
     <script>
-        function restart_bot(api_id, api_hash, session_file) {
+        function bot_action(action, api_id, api_hash, session_file) {
             $.ajax({
                 url: '/api',
                 method: 'POST',
                 data: {
-                    'action' : 'start_bot',
+                    'action' : action,
                     'api_id' : api_id,
                     'api_hash' : api_hash,
                     'session_file' : session_file
                 },
                 success: function(data) {
-                    alert(data)
+                    alert(data);
+                    setTimeout(()=> {
+                        window.location.reload();
+                    }, 100)
                 }
             })
         }

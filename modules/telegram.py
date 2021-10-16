@@ -1,6 +1,6 @@
 from re import split
 from telethon import TelegramClient, sync, functions, types
-import configparser as cp, subprocess, sys, tempfile, time, psutil
+import configparser as cp, subprocess, sys, tempfile, time, psutil, os
 from pymongo import MongoClient
 
 
@@ -47,17 +47,20 @@ class Telegram:
         self.stop(login)
         subprocess.Popen(cmd)
 
-    def stop(self, login):
+    def stop(self, login = None):
         """
         Stop spam script
 
         Args:
             text ([string]): Admin login
         """
-        cmd = [sys.executable, 'modules/telegram_script.py', str(self.api_id), self.api_hash, self.session_file, login]
+        cmd = [sys.executable, 'modules/telegram_script.py', str(self.api_id), self.api_hash, self.session_file]
+        if login:
+            cmd.append(login)
+
         for process in psutil.process_iter():
             try:
-                if process.cmdline() == cmd:
+                if process.cmdline()[:len(cmd)] == cmd:
                     print('Process found. Terminating it.')
                     process.terminate()
                     break
@@ -164,7 +167,7 @@ class Telegram:
 
         Args:
             username ([string]): username
-        """
+        """ 
 
         process = subprocess.Popen(
             [sys.executable, 'modules/telegram_check_username.py', str(self.api_id), self.api_hash, self.session_file, username],
@@ -181,6 +184,7 @@ class Telegram:
                 last_line += line.decode()
             except:
                 pass
+
         return last_line.split()[0] == 'true' if len(last_line.split()) > 0 else False
 
     def update_info(self, info):
@@ -230,5 +234,27 @@ class Telegram:
             }})
 
         client.close()
+
+
+    def drop_me(self):
+        """
+        Drop user from db
+        """
+
+        self.stop()
+
+        # Load config 
+        config = cp.ConfigParser()
+        config.read('config.ini')
+
+        # Create connection
+        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        db = client['tg']['accounts']
+
+        db.delete_one({'api_id' : int(self.api_id), 'api_hash': self.api_hash})
+        os.remove(self.session_file)
+        
+        client.close()
+        
 
         
