@@ -41,7 +41,7 @@ with sync.TelegramClient(sys.argv[3], int(sys.argv[1]), sys.argv[2]) as client:
     config.read('config.ini')
 
     # Create connection
-    client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+    client = client = MongoClient(config['MONGO']['connection'])
     db = client['tg']['accounts']
 
     db.update_one(

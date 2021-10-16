@@ -17,7 +17,7 @@ async def main():
     config.read('config.ini')
 
     # Create connection
-    client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+    client = client = MongoClient(config['MONGO']['connection'])
     db = client['tg']['tmp']
 
     if db.find_one({'api_id': api_id, 'api_hash': api_hash}) is None:

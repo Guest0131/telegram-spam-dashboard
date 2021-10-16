@@ -23,7 +23,7 @@ class User:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        client = client = MongoClient(config['MONGO']['connection'])
         db = client['tg']['users']
 
         # Search user in db
@@ -49,7 +49,7 @@ class User:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        client = MongoClient(config['MONGO']['connection'])
         db = client['tg']['users']
 
         new_user_id = db.insert_one({
@@ -74,7 +74,7 @@ class User:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        client = client = MongoClient(config['MONGO']['connection'])
         db = client['tg']['users']
 
         data = db.find_one({'login':login})
@@ -96,7 +96,7 @@ class User:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        client = client = MongoClient(config['MONGO']['connection'])
         db = client['tg']['users']
 
         db.update_one(

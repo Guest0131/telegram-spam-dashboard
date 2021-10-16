@@ -31,7 +31,7 @@ class Telegram:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        client = client = MongoClient(config['MONGO']['connection'])
         db = client['tg']['accounts']
 
         if db.find_one({'api_id' : self.api_id, 'api_hash' : self.api_hash}) == None:
@@ -79,7 +79,7 @@ class Telegram:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        client = client = MongoClient(config['MONGO']['connection'])
         db = client['tg']['accounts']
         
         # Update count
@@ -106,7 +106,7 @@ class Telegram:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        client = client = MongoClient(config['MONGO']['connection'])
         db = client['tg']['accounts']
         
         # Update count
@@ -133,7 +133,7 @@ class Telegram:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        client = client = MongoClient(config['MONGO']['connection'])
         db = client['tg']['accounts']
 
         query_resp = db.find_one({
@@ -160,7 +160,7 @@ class Telegram:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        client = client = MongoClient(config['MONGO']['connection'])
         db = client['tg']['accounts']
 
         return list(db.find({'owner_login' : login}))
@@ -229,7 +229,7 @@ class Telegram:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        client = client = MongoClient(config['MONGO']['connection'])
         db = client['tg']['tmp']
         
         db.update_one(
@@ -253,7 +253,7 @@ class Telegram:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient(config['MONGO']['host'], int(config['MONGO']['port']))
+        client = client = MongoClient(config['MONGO']['connection'])
         db = client['tg']['accounts']
 
         db.delete_one({'api_id' : int(self.api_id), 'api_hash': self.api_hash})
