@@ -1,3 +1,4 @@
+import sys
 from  flask import Flask, render_template, request, flash, redirect, url_for, session, send_from_directory
 from modules.user import User
 from modules.telegram import Telegram
@@ -170,4 +171,4 @@ def download_statistic(filename):
 
 
 if __name__ == '__main__':
-    app.run(port=80)
+    app.run(host=sys.argv[0], port=sys.argv[1])
