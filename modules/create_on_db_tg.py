@@ -13,7 +13,12 @@ config = cp.ConfigParser()
 config.read('config.ini')
 
 # Create connection
-client = client = MongoClient(config['MONGO']['connection'])
+client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
+            login=config['MONGO']['login'],
+            password=config['MONGO']['password'],
+            host=config['MONGO']['host'],
+            port=config['MONGO']['port']
+            ))
 db = client['tg']['accounts']
 
 clientTg = TelegramClient(session_file, api_id, api_hash)

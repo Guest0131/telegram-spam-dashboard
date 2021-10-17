@@ -23,7 +23,12 @@ class User:
         config.read('config.ini')
 
         # Create connection
-        client = client = MongoClient(config['MONGO']['connection'])
+        client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
+            login=config['MONGO']['login'],
+            password=config['MONGO']['password'],
+            host=config['MONGO']['host'],
+            port=config['MONGO']['port']
+            ))
         db = client['tg']['users']
 
         # Search user in db
@@ -49,13 +54,22 @@ class User:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient(config['MONGO']['connection'])
+        client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
+            login=config['MONGO']['login'],
+            password=config['MONGO']['password'],
+            host=config['MONGO']['host'],
+            port=config['MONGO']['port']
+            ))
         db = client['tg']['users']
 
         new_user_id = db.insert_one({
             'login': login,
             'password': hashlib.md5(password.encode()).hexdigest(), # Hashed password
-            'response': 'Hello World!'
+            'response': {
+                'text' : 'Разработано с душой',
+                'start' : 0,
+                'end':  10
+            }
         })
 
     @staticmethod
@@ -74,7 +88,12 @@ class User:
         config.read('config.ini')
 
         # Create connection
-        client = client = MongoClient(config['MONGO']['connection'])
+        client = client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
+            login=config['MONGO']['login'],
+            password=config['MONGO']['password'],
+            host=config['MONGO']['host'],
+            port=config['MONGO']['port']
+            ))
         db = client['tg']['users']
 
         data = db.find_one({'login':login})
@@ -96,7 +115,12 @@ class User:
         config.read('config.ini')
 
         # Create connection
-        client = client = MongoClient(config['MONGO']['connection'])
+        client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
+            login=config['MONGO']['login'],
+            password=config['MONGO']['password'],
+            host=config['MONGO']['host'],
+            port=config['MONGO']['port']
+            ))
         db = client['tg']['users']
 
         db.update_one(
