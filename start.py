@@ -170,14 +170,14 @@ def api_manager():
         # Upload chat lists
         if action == 'load_chats':
             
-            api_id, api_hash, session_file = request.form['api_id'], request.form['api_hash'], request.form['session_file']
+            api_id, api_hash, session_file, start, end = request.form['api_id'], request.form['api_hash'], request.form['session_file'], request.form['start'], request.form['end']
             
             file = request.files['file']
             file.save('chat_lists_data/chats_{}.txt'.format(api_id))
 
             tg = Telegram(api_id, api_hash, session_file)
             tg.stop(session.get('auth'))
-            return tg.load_chat_list('chat_lists_data/chats_{}.txt'.format(api_id))
+            return tg.load_chat_list('chat_lists_data/chats_{}.txt'.format(api_id), start, end)
 
 
     return 'false'

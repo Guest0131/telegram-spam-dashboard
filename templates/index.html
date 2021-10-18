@@ -214,6 +214,13 @@
                                                                               border-radius: 5px;
                                                                               padding: 7px 10px;
                                                                               margin-left: -20px;">
+                                                                              <div class="col-auto">
+                                                                                <div class="form-group">
+                                                                                    <label >Задержка на вход в группу</label></br>
+                                                                                    <input type="number"  name="in_start_{{bot['api_id']}}" class="form-control" id="exampleFormControlTextarea1" value="{{response['group']['start']}}" style="width:40%; float: left; margin-right:10%;">
+                                                                                    <input type="number"  name="in_end_{{bot['api_id']}}" class="form-control" value="{{response['group']['end']}}" style="width:40%; float:none">
+                                                                                </div>
+                                                                            </div>
                                                                               <button type="button" class="btn btn-success" onclick="uploadChats('{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">Импорт</button>
                                                                             </div>
                                                                             

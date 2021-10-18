@@ -8,6 +8,8 @@ function uploadChats(api_id, api_hash, session_file) {
     formData.set('api_id',api_id)
     formData.set('api_hash', api_hash)
     formData.set('session_file', session_file)
+    formData.set('start', $('input[name="in_start_' + api_id +'"]')[0].value)
+    formData.set('end', $('input[name="in_end_' + api_id +'"]')[0].value)
 
 
     $.ajax({
