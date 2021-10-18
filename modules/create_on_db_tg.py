@@ -1,9 +1,11 @@
 from telethon import TelegramClient, sync, functions
 from telethon.tl.functions.users import GetFullUserRequest
+from pymongo import MongoClient
+
+from  telegram import Telegram
 
 import configparser as cp, sys, time,random
-from pymongo import MongoClient
-from pprint import pprint
+
 
 
 api_id, api_hash, session_file, owner = int(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
@@ -24,6 +26,9 @@ db = client['tg']['accounts']
 clientTg = TelegramClient(session_file, api_id, api_hash)
 clientTg.start()
 
+tgObject = Telegram(api_id, api_hash, session_file)
+with open(tgObject.get_chats_list(), 'r') as f:
+    count_groups = len(list(f.read().splitlines()))
 
 client_info = clientTg(GetFullUserRequest(id=clientTg.get_me().id))
 db.insert_one({
@@ -37,5 +42,6 @@ db.insert_one({
     'username' : str(client_info.user.username)     if client_info.user.username   != None else "",
     'phone' : str(client_info.user.phone)           if client_info.user.phone      != None else "",
     'about' : str(client_info.about)                if client_info.about           != None else "",
-    'owner_login' : owner
+    'owner_login' : owner,
+    'groups_count' : count_groups
 })

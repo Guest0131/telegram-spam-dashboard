@@ -3,7 +3,7 @@ from  flask import Flask, render_template, request, flash, redirect, url_for, se
 from modules.user import User
 from modules.telegram import Telegram
 
-import configparser as cp, time, os, signal
+import configparser as cp, time, os, signal, subprocess
 
 
 app = Flask(__name__)
@@ -107,13 +107,19 @@ def update_settings():
 
 @app.route('/api', methods=['POST'])
 def api_manager():
+    print(request.form)
     if request.method == 'POST' and 'action' in request.form:
         action = request.form['action']
+        
 
         # Switch action
         if action == 'update_response':
-            User.update_response(session['auth'], request.form['text'], request.form['start'], request.form['end'])
-            return 'true'
+            User.update_response(
+                session['auth'],
+                request.form['group_text'], request.form['group_start'], request.form['group_end'], 
+                request.form['single_text'], request.form['single_start'], request.form['single_end']
+                )
+            return 'Настройки обновлены'
 
         # (Re-)start bot
         if action == 'restart_bot':
@@ -121,7 +127,7 @@ def api_manager():
             tg = Telegram(api_id, api_hash, session_file)            
             tg.run(session.get('auth'))
 
-            return 'true'
+            return 'Бот перезапущен'
 
         # Stop bot
         if action == 'stop_bot':
@@ -129,7 +135,7 @@ def api_manager():
             tg = Telegram(api_id, api_hash, session_file)            
             tg.stop(session.get('auth'))
 
-            return 'true'
+            return 'Бот остановлен'
 
         # Drop bot
         if action == 'drop_bot':
@@ -138,7 +144,7 @@ def api_manager():
             tg.stop(session.get('auth'))            
             tg.drop_me()
 
-            return 'true'
+            return 'Бот удалён'
 
         # Check username
         if action == 'check_username':
@@ -160,6 +166,18 @@ def api_manager():
             api_id, api_hash, session_file = request.form['api_id'], request.form['api_hash'], request.form['session_file']
             tg = Telegram(api_id, api_hash, session_file)
             return tg.get_chats_list()
+
+        # Upload chat lists
+        if action == 'load_chats':
+            
+            api_id, api_hash, session_file = request.form['api_id'], request.form['api_hash'], request.form['session_file']
+            
+            file = request.files['file']
+            file.save('chat_lists_data/chats_{}.txt'.format(api_id))
+
+            tg = Telegram(api_id, api_hash, session_file)
+            tg.stop(session.get('auth'))
+            return tg.load_chat_list('chat_lists_data/chats_{}.txt'.format(api_id))
 
 
     return 'false'

@@ -92,7 +92,7 @@
                                                 <th>Username</th>
                                                 <th>Phone</th>
                                                 <th>API_ID</th>
-                                                <th>API_HASH</th>
+                                                <th>GROUP_COUNT</th>
                                                 <th>MESSAGE_COUNT</th>
                                                 <th>Action</th>
                                             </tr>
@@ -113,7 +113,7 @@
                                                     <h6 class="m-0">{{ bot['api_id'] }}</h6>
                                                 </td>
                                                 <td>
-                                                    <h6 class="m-0">{{ bot['api_hash'] }}</h6>
+                                                    <h6 class="m-0">{{ bot['group_count'] }}</h6>
                                                 </td>
                                                 <td>
                                                     <h6 class="m-0">
@@ -205,6 +205,19 @@
                                                                         <button type="button" class="dropdown-item" onclick="download_chat_list('{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">
                                                                             Получить список чатов
                                                                         </button>
+                                                                        <div class="dropdown-divider"></div>
+                                                                        <div class="file-field dropdown-item">
+                                                                            <span>Импорт списка чатов</span>
+                                                                            <div class="btn btn-sm float-left" >
+                                                                              <input name="chatlist{{bot['api_id']}}" type="file" class="file-input" style="
+                                                                              border: 1px solid #4f4f4f73;
+                                                                              border-radius: 5px;
+                                                                              padding: 7px 10px;
+                                                                              margin-left: -20px;">
+                                                                              <button type="button" class="btn btn-success" onclick="uploadChats('{{ bot['api_id'] }}','{{ bot['api_hash'] }}','{{ bot['session_file'] }}')">Импорт</button>
+                                                                            </div>
+                                                                            
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </form>
@@ -256,24 +269,42 @@
                                     </div>
                                     <!-- statistics [end] -->
 
-                                    <!-- text update [start] -->
+                                    <!-- text update group [start] -->
                                     <div class="card-block border-bottom">
                                         <div class="col-auto">
                                             <div class="form-group">
-                                                <label for="exampleFormControlTextarea1">Отправляемый текст</label>
-                                                <textarea id="responce_text" name="responce_text" class="form-control" id="exampleFormControlTextarea1" rows="3">{{response['text']}}</textarea>
+                                                <label for="exampleFormControlTextarea1">Отправляемый текст (для группы)</label>
+                                                <textarea id="responce_text" name="group_responce_text" class="form-control" id="exampleFormControlTextarea1" rows="3">{{response['group']['text']}}</textarea>
                                             </div>
                                         </div>
                                         <div class="col-auto">
                                             <div class="form-group">
-                                                <label >Задержка на отклик сообщения</label></br>
-                                                <input type="number"  name="responce_start" class="form-control" id="exampleFormControlTextarea1" value="{{response['start']}}" style="width:40%; float: left; margin-right:10%;">
-                                                <input type="number"  name="responce_end" class="form-control" value="{{response['end']}}" style="width:40%; float:none">
+                                                <label >Задержка на отклик сообщения (для группы)</label></br>
+                                                <input type="number"  name="group_responce_start" class="form-control" id="exampleFormControlTextarea1" value="{{response['group']['start']}}" style="width:40%; float: left; margin-right:10%;">
+                                                <input type="number"  name="group_responce_end" class="form-control" value="{{response['group']['end']}}" style="width:40%; float:none">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- text update group [end] -->
+                                    
+                                    <!-- text update single [start] -->
+                                    <div class="card-block border-bottom">
+                                        <div class="col-auto">
+                                            <div class="form-group">
+                                                <label for="exampleFormControlTextarea1">Отправляемый текст (для пользователя)</label>
+                                                <textarea id="responce_text" name="single_responce_text" class="form-control" id="exampleFormControlTextarea1" rows="3">{{response['single']['text']}}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="form-group">
+                                                <label >Задержка на отклик сообщения (для пользователя)</label></br>
+                                                <input type="number"  name="single_responce_start" class="form-control" id="exampleFormControlTextarea1" value="{{response['single']['start']}}" style="width:40%; float: left; margin-right:10%;">
+                                                <input type="number"  name="single_responce_end" class="form-control" value="{{response['single']['end']}}" style="width:40%; float:none">
                                             </div>
                                             <button class="btn btn-dark" onclick="updateResponse()">Обновить</button>
                                         </div>
                                     </div>
-                                    <!-- text update [end] -->
+                                    <!-- text update single [end] -->
                                     
                                 </div>
                             </div>
@@ -289,94 +320,7 @@
         </div>
     </div>
     <!-- [ Main Content ] end -->
-    <script>
-        function download_chat_list(api_id, api_hash, session_file) {
-            $.ajax({
-                url: '/api',
-                method: 'POST',
-                data: {
-                    'action' : 'get_list_chats',
-                    'api_id' : api_id,
-                    'api_hash' : api_hash,
-                    'session_file' : session_file
-                },
-                success: function(data) {
-                    if (data != 'false') {
-                        var link = document.createElement('a')
-                        link.setAttribute('href', window.location.origin + '/' + data)
-                        link.setAttribute('download', 'chats.txt')
-                        link.click()
-                    }
-                }
-            })
-            
-        }
-
-        function bot_action(action, api_id, api_hash, session_file) {
-            $.ajax({
-                url: '/api',
-                method: 'POST',
-                data: {
-                    'action' : action,
-                    'api_id' : api_id,
-                    'api_hash' : api_hash,
-                    'session_file' : session_file
-                },
-                success: function(data) {
-                    alert(data);
-                    setTimeout(()=> {
-                        window.location.reload();
-                    }, 100)
-                }
-            })
-        }
-
-        function updateResponse() {
-            $.ajax({
-                url: '/api',
-                method: 'POST',
-                data: {
-                    'action' : 'update_response',
-                    'text' : $("#responce_text")[0].value,
-                    'start' : $('input[name="responce_start"]')[0].value,
-                    'end' : $('input[name="responce_end"]')[0].value,
-                },
-                success: function(data) {
-                    alert(data)
-                }
-            })
-        }
-
-        function checkUsername(api_id, api_hash, session_file) {
-            var button = $('#check'+api_id)[0]
-            var usernameInput = $('#username' + api_id)[0]
-            button.style="background-color:gray"
-            usernameInput.style="margin-left: -15px; border-color:gray"
-
-            $.ajax({
-                url: '/api',
-                method: 'POST',
-                data: {
-                    'action' : 'check_username',
-                    'api_id' : api_id,
-                    'api_hash' : api_hash,
-                    'session_file' : session_file,
-                    'username' : usernameInput.value
-                },
-                success: function(data) {
-                    console.log(data)
-                    if (data == "true") {
-                        button.style="background-color:#03aa03bd"
-                        usernameInput.style="margin-left: -15px; border-color:#03aa03bd"
-                    } else {
-                        button.style="background-color:#ff0000bd"
-                        usernameInput.style="margin-left: -15px; border-color:#ff0000bd"
-                    }
-                }
-            })
-        }
-        
-    </script>
+    <script src="{{ url_for( 'static', filename='js/user.js')}}"></script>
 
     <!-- Required Js -->
     <script src="{{ url_for( 'static', filename='js/vendor-all.min.js')}}"></script>

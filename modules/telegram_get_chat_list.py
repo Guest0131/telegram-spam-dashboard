@@ -15,4 +15,4 @@ for dialog in client.iter_dialogs():
 
 
 with open('statistics/chats_data_{}.txt'.format(api_id), 'w', encoding='cp1251') as f:
-    f.write('\n'.join(chats))
+    f.write(('\n'.join(chats)).encode('ascii', errors='ignore').decode())

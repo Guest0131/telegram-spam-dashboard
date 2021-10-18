@@ -101,7 +101,7 @@ class User:
         return data['response'] if data is not None and 'response' in data else {'text': 'Обновите текст', 'start' : 0, 'end' : 10}
 
     @staticmethod
-    def update_response(login, text, start, end):
+    def update_response(login, group_text, group_start, group_end, single_text, single_start, single_end):
         """
         Update response text
 
@@ -128,9 +128,17 @@ class User:
             { 
                 '$set' : {
                 'response' : {
-                    'text' : text,
-                    'start': int(start),
-                    'end' : int(end)
+                    'group' : {
+                        'text' : group_text,
+                        'start': int(group_start),
+                        'end'  : int(group_end)
+                    },
+                    'single' : {
+                        'text' : single_text,
+                        'start': int(single_start),
+                        'end'  : int(single_end)
+                    }
+                    
                 }
                 }
             })

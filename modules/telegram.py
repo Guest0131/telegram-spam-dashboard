@@ -321,4 +321,17 @@ class Telegram:
 
         
         return 'statistics/chats_data_{}.txt'.format(self.api_id)
+
+
+    def load_chat_list(self, chats_file):
+        output_file = 'statistics/chats_sign_{}.log'.format(self.api_id)
+
+        subprocess.run(
+                [
+                    sys.executable, 'modules/telegram_sign_in_chats.py',
+                    str(self.api_id), self.api_hash, self.session_file, chats_file, output_file
+                ]
+            )
+
+        return output_file
         

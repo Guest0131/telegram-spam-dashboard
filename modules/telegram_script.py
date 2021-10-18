@@ -1,4 +1,5 @@
-from telethon import TelegramClient, sync, events
+from telethon import TelegramClient, sync, events, utils
+from telethon.tl.types import Channel
 from pymongo import MongoClient
 
 from telegram import Telegram
@@ -17,17 +18,34 @@ async def normal_handler(event):
 
     response = User.get_response(admin_login)
 
-    time.sleep(random.randint(
-        int(response['start']),
-        int(response['end'])
-    ))
-
     tg = Telegram(api_id, api_hash, session_file)
     tg.update_pid(os.getpid())
-    tg.update_count()
+    
 
-    sender = await event.get_input_sender()
-    await client.send_message(sender, response['text'])
+    try:
+        chat = await event.get_chat()
+        
+        username = chat.username
+        if type(chat) != Channel:
+            raise Exception("Not channel")
+
+        time.sleep(random.randint(
+            int(response['group']['start']),
+            int(response['group']['end'])
+        ))
+        message_arr = response['group']['text'].split('\n')
+        await client.send_message(entity=chat.username, message=message_arr[random.randint(0, len(message_arr) - 1)])
+    except:
+        sender = await event.get_input_sender()
+        time.sleep(random.randint(
+            int(response['single']['start']),
+            int(response['single']['end'])
+        ))
+
+        message_arr = response['single']['text'].split('\n')
+        await client.send_message(sender, message_arr[random.randint(0, len(message_arr) - 1)])
+
+    tg.update_count()
         
 
 client.start()
