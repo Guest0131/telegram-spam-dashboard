@@ -1,6 +1,6 @@
 function uploadChats(api_id, api_hash, session_file) {
     var input = $('input[name=chatlist' + api_id +']')
-    alert('Началась массовая подписка на чаты.\nОжидайте!\nПо завершению вы получете уведомление!');
+    alert('Началась массовая подписка на чаты.\nОжидайте!\nНе трогайте бота!\nКак только измениться индикация можете полноценно им пользоваться');
     
     var formData = new FormData();
     formData.append('file', input[0].files[0])

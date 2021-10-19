@@ -177,7 +177,8 @@ def api_manager():
 
             tg = Telegram(api_id, api_hash, session_file)
             tg.stop(session.get('auth'))
-            return tg.load_chat_list('chat_lists_data/chats_{}.txt'.format(api_id), start, end)
+            tg.load_chat_list('chat_lists_data/chats_{}.txt'.format(api_id), start, end)
+            return 'Подписка началась'
 
 
     return 'false'
