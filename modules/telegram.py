@@ -198,6 +198,7 @@ class Telegram:
             username ([string]): username
         """ 
 
+        self.stop()
         process = subprocess.Popen(
             [sys.executable, 'modules/telegram_check_username.py', str(self.api_id), self.api_hash, self.session_file, username],
             stdout=subprocess.PIPE
@@ -230,7 +231,7 @@ class Telegram:
                                 'photo': [string]
                             }
         """
-        subprocess.Popen(
+        subprocess.run(
                 [
                     sys.executable, 'modules/telegram_update_profile.py', str(self.api_id), self.api_hash, self.session_file, 
                     info['first_name'], info['last_name'], info['about'], info['username'], info['photo']
