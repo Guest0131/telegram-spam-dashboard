@@ -77,7 +77,7 @@ def update_settings():
             return redirect(url_for('main'))
 
         tg = Telegram(api_id, api_hash, session_file)
-        if username != '' and tg.check_username(username):
+        if username != '':
             return redirect(url_for('main'))
 
         if 'photoProfile' in request.files and request.files['photoProfile'].filename != '':
