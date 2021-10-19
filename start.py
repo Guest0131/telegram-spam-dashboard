@@ -91,6 +91,7 @@ def update_settings():
             photo_path = 'None'
 
         tg.stop(session.get('auth'))
+        
         tg.update_info({
             'first_name': firstName,
             'last_name': lastName,
