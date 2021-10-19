@@ -66,7 +66,7 @@ class Telegram:
         self.update_status('not_work')
         for process in psutil.process_iter():
             try:
-                if process.cmdline()[2:5] == cmd:
+                if ';'.join(cmd) in ';'.join(process.cmdline()):
                     print('Process found. Terminating it.')
                     process.terminate()
             except:
