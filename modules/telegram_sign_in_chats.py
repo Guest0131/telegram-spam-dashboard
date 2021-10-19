@@ -30,7 +30,8 @@ db.update(
 with TelegramClient(session_file, api_id, api_hash) as client:
     with open(chats_file, 'r') as f:
         data = f.read().splitlines()
-
+        random.shuffle(data)
+        
     for chat in data:
         try:
             result = client(functions.channels.JoinChannelRequest(
