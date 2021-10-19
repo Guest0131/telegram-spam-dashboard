@@ -22,6 +22,10 @@ client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
             port=config['MONGO']['port']
             ))
 db = client['tg']['accounts']
+db.update(
+    {'session_file' : session_file},
+    {'$set': { 'status' : 'group' } }
+    )
 
 with TelegramClient(session_file, api_id, api_hash) as client:
     with open(chats_file, 'r') as f:
@@ -32,6 +36,7 @@ with TelegramClient(session_file, api_id, api_hash) as client:
             result = client(functions.channels.JoinChannelRequest(
                 channel=chat[1:]
             ))
+            print(result)
             log['ok'].append(chat[1:])
                 
             db.update_one(
@@ -49,3 +54,8 @@ with open(output_file, 'w') as f:
         '==========Success==========\n'+'\n'.join(log['ok']) + 
         '\n==========Bad==========\n'+'\n'.join(log['error'])
         )
+
+db.update(
+    {'session_file' : session_file},
+    {'$set': { 'status' : 'not_work' } }
+    )

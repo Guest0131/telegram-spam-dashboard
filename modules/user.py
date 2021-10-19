@@ -65,11 +65,19 @@ class User:
         new_user_id = db.insert_one({
             'login': login,
             'password': hashlib.md5(password.encode()).hexdigest(), # Hashed password
-            'response': {
-                'text' : 'Разработано с душой',
-                'start' : 0,
-                'end':  10
-            }
+            'response' : {
+                    'group' : {
+                        'text' : 'Тут текст для группы',
+                        'start': 77,
+                        'end'  : 777
+                    },
+                    'single' : {
+                        'text' : 'Тут текст для чувака',
+                        'start': 0,
+                        'end'  : 10
+                    }
+                    
+                }
         })
 
     @staticmethod

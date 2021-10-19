@@ -62,16 +62,13 @@ class Telegram:
         Args:
             text ([string]): Admin login
         """
-        cmd = [sys.executable, 'modules/telegram_script.py', str(self.api_id), self.api_hash, self.session_file]
-        if login:
-            cmd.append(login)
-
+        cmd = [str(self.api_id), self.api_hash, self.session_file]
+        self.update_status('not_work')
         for process in psutil.process_iter():
             try:
-                if process.cmdline()[:len(cmd)] == cmd:
+                if process.cmdline()[2:5] == cmd:
                     print('Process found. Terminating it.')
                     process.terminate()
-                    break
             except:
                 pass
 
@@ -335,3 +332,21 @@ class Telegram:
 
         return output_file
         
+    def update_status(self, status):
+        # Load config 
+        config = cp.ConfigParser()
+        config.read('config.ini')
+
+        # Create connection
+        client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
+            login=config['MONGO']['login'],
+            password=config['MONGO']['password'],
+            host=config['MONGO']['host'],
+            port=config['MONGO']['port']
+            ))
+        db = client['tg']['accounts']
+
+        db.update(
+            {'session_file' : self.session_file},
+            {'$set': { 'status' : status } }
+        )

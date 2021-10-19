@@ -24,8 +24,10 @@ function uploadChats(api_id, api_hash, session_file) {
                 link.setAttribute('href', window.location.origin + '/' + data)
                 link.setAttribute('download', 'chats.txt')
                 link.click()
+                
             }
-            bot_action('restart_bot', api_id, api_hash, session_file)
+            window.location.reload()
+            
         }
     })
 }

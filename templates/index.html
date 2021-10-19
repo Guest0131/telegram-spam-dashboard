@@ -99,7 +99,10 @@
                                         </thead>
                                         <tbody>
                                             {% for bot in data %}
-                                            <tr>
+                                            <tr  
+                                            {% if bot['status'] == 'group' %} 
+                                                style="border: 3px solid #ff3c0042;background-color: #ff000024;" 
+                                            {% endif %} >
                                                 <td>
                                                     <h6 class="m-0"><img class="rounded-circle  m-r-10"
                                                             style="width:40px;"

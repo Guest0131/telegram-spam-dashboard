@@ -20,6 +20,7 @@ async def normal_handler(event):
 
     tg = Telegram(api_id, api_hash, session_file)
     tg.update_pid(os.getpid())
+    tg.update_status('work')
     
 
     try:
