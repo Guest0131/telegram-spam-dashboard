@@ -214,7 +214,7 @@ class Telegram:
             except:
                 pass
 
-        return last_line.split()[0] == 'true' if len(last_line.split()) > 0 else False
+        return 'true' in last_line.split()[0]  if len(last_line) > 0 else False
 
     def update_info(self, info):
         """

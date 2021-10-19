@@ -125,7 +125,8 @@ def api_manager():
         # (Re-)start bot
         if action == 'restart_bot':
             api_id, api_hash, session_file = request.form['api_id'], request.form['api_hash'], request.form['session_file']
-            tg = Telegram(api_id, api_hash, session_file)            
+            tg = Telegram(api_id, api_hash, session_file)   
+            tg.stop(session.get('auth'))         
             tg.run(session.get('auth'))
 
             return 'Бот перезапущен'
@@ -154,7 +155,7 @@ def api_manager():
             tg.stop(session.get('auth'))
 
             result = tg.check_username(username)
-            tg.run(session.get('auth'))
+            tg.stop(session.get('auth'))
             return 'true' if result else 'false'
 
         # Create session (tmp record on db)
@@ -165,8 +166,9 @@ def api_manager():
         # Download list chats
         if action == 'get_list_chats':
             api_id, api_hash, session_file = request.form['api_id'], request.form['api_hash'], request.form['session_file']
-            tg.stop(session.get('auth'))
             tg = Telegram(api_id, api_hash, session_file)
+            tg.stop(session.get('auth'))
+            
             return tg.get_chats_list()
 
         # Upload chat lists
