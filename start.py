@@ -77,9 +77,6 @@ def update_settings():
             return redirect(url_for('main'))
 
         tg = Telegram(api_id, api_hash, session_file)
-        if username != '':
-            return redirect(url_for('main'))
-
         if 'photoProfile' in request.files and request.files['photoProfile'].filename != '':
             file = request.files['photoProfile']
             photo_path = 'photo_data/photo_{}.{}'.format(
