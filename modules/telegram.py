@@ -72,6 +72,8 @@ class Telegram:
             except:
                 pass
 
+        time.sleep(2)
+
     def update_count(self):
         """
         Update count. Increment field `count_message` once
