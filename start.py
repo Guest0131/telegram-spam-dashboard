@@ -164,6 +164,7 @@ def api_manager():
         # Download list chats
         if action == 'get_list_chats':
             api_id, api_hash, session_file = request.form['api_id'], request.form['api_hash'], request.form['session_file']
+            tg.stop(session.get('auth'))
             tg = Telegram(api_id, api_hash, session_file)
             return tg.get_chats_list()
 
