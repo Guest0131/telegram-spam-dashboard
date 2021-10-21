@@ -5,12 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Python: Server Start",
             "type": "python",
             "request": "launch",
             "program": "${file}",
+            "python": "C:\\dev\\projects\\spam-tg-dashboard\\venv-win\\Scripts\\python.exe",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}", 
+            "args": [
+                "localhost",
+                "80"
+            ]
         },
         {
             "name": "Python: Telegram.py",

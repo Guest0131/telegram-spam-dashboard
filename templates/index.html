@@ -102,7 +102,12 @@
                                             <tr  
                                             {% if bot['status'] == 'group' %} 
                                                 style="border: 3px solid #ff3c0042;background-color: #ff000024;" 
+                                            {% endif %} 
+                                            {% if bot['status'] == 'work' %} 
+                                                style="border: 3px solid #00ff5542;background-color: #00ff5524;" 
                                             {% endif %} >
+                                            >
+                                            
                                                 <td>
                                                     <h6 class="m-0"><img class="rounded-circle  m-r-10"
                                                             style="width:40px;"

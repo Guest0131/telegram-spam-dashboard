@@ -11,7 +11,7 @@ client.start()
 chats = ['Link\tID\tTitle']
 for dialog in client.iter_dialogs():
     if dialog.is_channel:
-        chats.append('tg.me/' + dialog.entity.username + '\t' + str(dialog.entity.id) + '\t' + dialog.entity.title)
+        chats.append('tg.me/' + str(dialog.entity.username) + '\t' + str(dialog.entity.id) + '\t' + str(dialog.entity.title))
 
 
 with open('statistics/chats_data_{}.txt'.format(api_id), 'w', encoding='cp1251') as f:

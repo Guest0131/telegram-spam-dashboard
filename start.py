@@ -104,7 +104,7 @@ def update_settings():
 
 
 @app.route('/api', methods=['POST'])
-def api_manager():
+async def api_manager():
     print(request.form)
     if request.method == 'POST' and 'action' in request.form:
         action = request.form['action']
@@ -152,7 +152,7 @@ def api_manager():
             tg.stop(session.get('auth'))
 
             result = tg.check_username(username)
-            tg.stop(session.get('auth'))
+            
             return 'true' if result else 'false'
 
         # Create session (tmp record on db)
@@ -174,12 +174,12 @@ def api_manager():
             api_id, api_hash, session_file, start, end = request.form['api_id'], request.form['api_hash'], request.form['session_file'], request.form['start'], request.form['end']
             
             file = request.files['file']
-            file.save('chat_lists_data/chats_{}.txt'.format(api_id))
+            file.save('chat_list_data/chats_{}.txt'.format(api_id))
 
             tg = Telegram(api_id, api_hash, session_file)
             tg.stop(session.get('auth'))
-            tg.load_chat_list('chat_lists_data/chats_{}.txt'.format(api_id), start, end)
-            return 'Подписка началась'
+            tg.load_chat_list('chat_list_data/chats_{}.txt'.format(api_id), start, end)
+            return 'Подписка закончилась'
 
 
     return 'false'
@@ -191,4 +191,4 @@ def download_statistic(filename):
 
 
 if __name__ == '__main__':
-    app.run(host=sys.argv[1], port=int(sys.argv[2]))
+    app.run(host="localhost", port=80)

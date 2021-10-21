@@ -1,6 +1,6 @@
 from re import split
-from telethon import TelegramClient, sync, functions, types
-import configparser as cp, subprocess, sys, tempfile, time, psutil, os
+from telethon import TelegramClient, sync, functions, types, tl
+import configparser as cp, subprocess, sys, asyncio, time, psutil, os, random
 from pymongo import MongoClient
 
 
@@ -190,7 +190,7 @@ class Telegram:
         return list(db.find({'owner_login' : login}))
 
 
-    def check_username(self, username):
+    async def check_username(self, username):
         """
         Check username
 
@@ -198,24 +198,12 @@ class Telegram:
             username ([string]): username
         """ 
 
-        self.stop()
-        process = subprocess.Popen(
-            [sys.executable, 'modules/telegram_check_username.py', str(self.api_id), self.api_hash, self.session_file, username],
-            stdout=subprocess.PIPE
-            )
+        client = await TelegramClient(self.session_file, self.api_id, self.api_hash)
+        result = client(await functions.account.CheckUsernameRequest(
+            username=sys.argv[4]
+        ))
 
-        last_line = ""
-        while True:
-            time.sleep(1)
-            line = process.stdout.readline()
-            if not line:
-                break
-            try:
-                last_line += line.decode()
-            except:
-                pass
-
-        return 'true' in last_line.split()[0]  if len(last_line) > 0 else False
+        return 'true' if bool(result) else 'false'
 
     def update_info(self, info):
         """
@@ -250,16 +238,9 @@ class Telegram:
     @staticmethod
     def send_code_request(api_id, api_hash, code):
         # Load config 
-        config = cp.ConfigParser()
-        config.read('config.ini')
-
+     
         # Create connection
-        client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
-            login=config['MONGO']['login'],
-            password=config['MONGO']['password'],
-            host=config['MONGO']['host'],
-            port=config['MONGO']['port']
-            ))
+        client = Telegram.get_mongo_client()
         db = client['tg']['tmp']
         
         db.update_one(
@@ -278,17 +259,8 @@ class Telegram:
 
         self.stop()
 
-        # Load config 
-        config = cp.ConfigParser()
-        config.read('config.ini')
-
         # Create connection
-        client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
-            login=config['MONGO']['login'],
-            password=config['MONGO']['password'],
-            host=config['MONGO']['host'],
-            port=config['MONGO']['port']
-            ))
+        client = self.get_mongo_client()
         db = client['tg']['accounts']
 
         db.delete_one({'api_id' : int(self.api_id), 'api_hash': self.api_hash})
@@ -324,17 +296,35 @@ class Telegram:
 
 
     def load_chat_list(self, chats_file, start, end):
-        output_file = 'statistics/chats_sign_{}.log'.format(self.api_id)
-
-        subprocess.Popen(
+       subprocess.Popen(
                 [
                     sys.executable, 'modules/telegram_sign_in_chats.py',
-                    str(self.api_id), self.api_hash, self.session_file, chats_file, output_file, start, end
+                    str(self.api_id), self.api_hash, self.session_file, chats_file, start, end
                 ]
             )
+    def inc_group_count(self):
+        # Create connection
+        client = self.get_mongo_client()
+        db = client['tg']['accounts']
 
+        db.update(
+            {'session_file' : self.session_file},
+            {'$inc': { 'group_count' : 1 } }
+        )
         
     def update_status(self, status):
+
+        # Create connection
+        client = self.get_mongo_client()
+        db = client['tg']['accounts']
+
+        db.update(
+            {'session_file' : self.session_file},
+            {'$set': { 'status' : status } }
+        )
+
+    @staticmethod
+    def get_mongo_client():
         # Load config 
         config = cp.ConfigParser()
         config.read('config.ini')
@@ -346,9 +336,5 @@ class Telegram:
             host=config['MONGO']['host'],
             port=config['MONGO']['port']
             ))
-        db = client['tg']['accounts']
-
-        db.update(
-            {'session_file' : self.session_file},
-            {'$set': { 'status' : status } }
-        )
+        
+        return client

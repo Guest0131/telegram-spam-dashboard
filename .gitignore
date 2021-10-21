@@ -1,5 +1,5 @@
 sessions/*
 statistics/*
 templates/datta-lite
-photo_data
-chat_lists_data
+photo_data/*
+chat_lists_data/*

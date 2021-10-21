@@ -1,17 +1,51 @@
 from telethon import TelegramClient, sync, events, utils
-from telethon.tl.types import Channel
+from telethon.tl.types import Channel, User as tUser
 from pymongo import MongoClient
 
 from telegram import Telegram
 from user import User
 
-import sys, os, time, random
+import sys, os, time, random, asyncio, threading
 
 api_id, api_hash, session_file, admin_login = int(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
 
 
 # Create bot
 client = TelegramClient(session_file, api_id, api_hash)
+
+async def send_user_message(response, sender, text, tg):
+    time.sleep(random.randint(
+        int(response['single']['start']),
+        int(response['single']['end'])
+    ))
+
+    await client.send_message(
+        sender, 
+        text
+    )
+    tg.update_count()
+
+async def send_chat_message(response, sender, text, tg):
+    time.sleep(random.randint(
+            int(response['group']['start']),
+            int(response['group']['end'])
+        ))
+    
+    await client.send_message(
+        entity=sender, 
+        message=text
+    )
+    tg.update_count()
+
+def beetwen_callback(type, response, sender, text, tg):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    if type == 'group':
+        loop.run_until_complete(send_chat_message(response,sender, text, tg))
+    else:
+        loop.run_until_complete(send_user_message(response,sender, text, tg))
+    loop.close()
 
 @client.on(events.NewMessage())
 async def normal_handler(event):
@@ -22,31 +56,30 @@ async def normal_handler(event):
     tg.update_pid(os.getpid())
     tg.update_status('work')
     
-
-    try:
+    chat = await event.get_chat()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    if type(chat) == tUser:
+        print(chat.username)
+        sender = await event.get_input_sender()
+        message_arr = response['single']['text'].split('\n')
+        # await send_user_message(response, sender, message_arr[random.randint(0, len(message_arr) - 1)],tg)
+        
+        asyncio.get_event_loop().create_task(send_user_message(response, sender, message_arr[random.randint(0, len(message_arr) - 1)], tg))
+        # _thread = threading.Thread(target=asyncio.run, args=()
+        # _thread.start()
+        
+    elif type(chat) == Channel:
         chat = await event.get_chat()
         
-        username = chat.username
-        if type(chat) != Channel:
-            raise Exception("Not channel")
+        print(chat.username)
 
-        time.sleep(random.randint(
-            int(response['group']['start']),
-            int(response['group']['end'])
-        ))
         message_arr = response['group']['text'].split('\n')
-        await client.send_message(entity=chat.username, message=message_arr[random.randint(0, len(message_arr) - 1)])
-    except:
-        sender = await event.get_input_sender()
-        time.sleep(random.randint(
-            int(response['single']['start']),
-            int(response['single']['end'])
-        ))
+        asyncio.get_event_loop().create_task(send_user_message(response, chat.username, message_arr[random.randint(0, len(message_arr) - 1)], tg))
+        # _thread = threading.Thread(target=asyncio.run, args=(beetwen_callback('group',response, chat.username, message_arr[random.randint(0, len(message_arr) - 1)], tg)))
+        # _thread.start()
+        # await send_chat_message(response, chat.username, message_arr[random.randint(0, len(message_arr) - 1)])
 
-        message_arr = response['single']['text'].split('\n')
-        await client.send_message(sender, message_arr[random.randint(0, len(message_arr) - 1)])
-
-    tg.update_count()
         
 
 client.start()

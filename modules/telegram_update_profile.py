@@ -4,7 +4,7 @@ from telethon.tl.functions.users import GetFullUserRequest
 from pymongo import MongoClient
 import sys, configparser as cp
 
-print(sys.argv)
+
 with sync.TelegramClient(sys.argv[3], int(sys.argv[1]), sys.argv[2]) as client:
     try:
         # Update first_name, last_name, about
@@ -32,6 +32,11 @@ with sync.TelegramClient(sys.argv[3], int(sys.argv[1]), sys.argv[2]) as client:
             ))
         except:
             pass
+    
+    count_chats = 0
+    for dialog in client.iter_dialogs():
+        if dialog.is_channel:
+            count_chats += 1
 
 
     client_info = client(GetFullUserRequest(id=client.get_me().id))
@@ -58,5 +63,6 @@ with sync.TelegramClient(sys.argv[3], int(sys.argv[1]), sys.argv[2]) as client:
             'last_name' : str(client_info.user.last_name)   if client_info.user.last_name  == None else client_info.user.last_name,
             'username' : str(client_info.user.username      if client_info.user.username   == None else client_info.user.username),
             'about' : str(client_info.about)                if client_info.about           == None else client_info.about,
+            'group_count' : count_chats
         }
     })
