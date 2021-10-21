@@ -191,4 +191,4 @@ def download_statistic(filename):
 
 
 if __name__ == '__main__':
-    app.run(host="localhost", port=80)
+    app.run(host=sys.argv[1], port=sys.argv[2])
