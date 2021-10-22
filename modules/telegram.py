@@ -1,6 +1,6 @@
 from re import split
 from telethon import TelegramClient, sync, functions, types, tl
-import configparser as cp, subprocess, sys, asyncio, time, psutil, os, random
+import configparser as cp, subprocess, sys, asyncio, time, psutil, os, random, socks
 from pymongo import MongoClient
 
 
@@ -19,7 +19,7 @@ class Telegram:
         self.api_id = int(api_id)
         self.api_hash = api_hash
         
-    def create_on_db(self, owner):
+    def create_on_db(self, owner, ip, port):
         """
         Register on db
 
@@ -40,7 +40,7 @@ class Telegram:
         db = client['tg']['accounts']
 
         if db.find_one({'api_id' : self.api_id, 'api_hash' : self.api_hash}) == None:
-            subprocess.Popen([sys.executable, 'modules/create_on_db_tg.py', str(self.api_id), self.api_hash, self.session_file, owner])
+            subprocess.Popen([sys.executable, 'modules/create_on_db_tg.py', str(self.api_id), self.api_hash, self.session_file, owner, ip, port])
         client.close()
 
     def run(self, login):
@@ -197,8 +197,8 @@ class Telegram:
         Args:
             username ([string]): username
         """ 
-
-        client = await TelegramClient(self.session_file, self.api_id, self.api_hash)
+        proxy = self.get_socks()
+        client = await TelegramClient(self.session_file, self.api_id, self.api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port']))
         result = client(await functions.account.CheckUsernameRequest(
             username=sys.argv[4]
         ))
@@ -227,16 +227,25 @@ class Telegram:
             )
 
     @staticmethod
-    def create_tmp_session(api_id, api_hash, phone):
+    def create_tmp_session(api_id, api_hash, phone, ip, port):
         subprocess.Popen(
                 [
                     sys.executable, 'modules/create_session.py',
-                    str(api_id), api_hash, phone
+                    str(api_id), api_hash, phone, ip, str(port)
                 ]
             )
 
     @staticmethod
-    def send_code_request(api_id, api_hash, code):
+    def send_code_request(api_id , api_hash, code):
+        """
+        Send code from `@Telegram`
+
+        Args:
+            api_id (int | string): api_id
+            api_hash (string): api_has
+            code (string): Code
+        """
+
         # Load config 
      
         # Create connection
@@ -296,13 +305,26 @@ class Telegram:
 
 
     def load_chat_list(self, chats_file, start, end):
-       subprocess.Popen(
+        """
+        Load chat list in accout
+
+        Args:
+            chats_file (string): Path to chat list file
+            start (string): Random start time
+            end (string): Random end time
+        """
+        subprocess.Popen(
                 [
                     sys.executable, 'modules/telegram_sign_in_chats.py',
                     str(self.api_id), self.api_hash, self.session_file, chats_file, start, end
                 ]
             )
+
+
     def inc_group_count(self):
+        """
+        Increment group count
+        """
         # Create connection
         client = self.get_mongo_client()
         db = client['tg']['accounts']
@@ -313,7 +335,12 @@ class Telegram:
         )
         
     def update_status(self, status):
+        """
+        Update status account
 
+        Args:
+            status (string): new status
+        """
         # Create connection
         client = self.get_mongo_client()
         db = client['tg']['accounts']
@@ -325,6 +352,12 @@ class Telegram:
 
     @staticmethod
     def get_mongo_client():
+        """
+        Get mongo client instance
+
+        Returns:
+            [MongoClient]: client mongo instance
+        """
         # Load config 
         config = cp.ConfigParser()
         config.read('config.ini')
@@ -338,3 +371,20 @@ class Telegram:
             ))
         
         return client
+
+
+    def get_socks(self):
+        """
+        Get poxy params
+
+        Returns:
+            [None | dict]: Proxy configuration
+        """
+        client = self.get_mongo_client()
+        db = client['tg']['accounts']
+
+        response = db.find_one({ 'session_file' : self.session_file })
+        if response == None or 'proxy' not in response:
+            return None
+
+        return response['proxy']

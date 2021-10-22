@@ -51,13 +51,14 @@ def create_bot():
 def addbot():
     if request.method == 'POST':
         api_id, api_hash, tg_code = request.form['api_id'], request.form['api_hash'], request.form['tg_code']
+        ip, port = request.form['ip'], request.form['port']
         Telegram.send_code_request(api_id, api_hash, tg_code)
         time.sleep(3)
 
         session_file = 'sessions/{}_{}.session'.format(api_id, api_hash)
         try:
             tg = Telegram(api_id, api_hash, session_file)
-            tg.create_on_db(session.get('auth'))
+            tg.create_on_db(session.get('auth'), ip, port)
             time.sleep(2)
             tg.run(session.get('auth'))
         except:
@@ -158,7 +159,8 @@ async def api_manager():
         # Create session (tmp record on db)
         if action == 'create_session':
             api_id, api_hash, phone = request.form['api_id'], request.form['api_hash'], request.form['phone']
-            Telegram.create_tmp_session(api_id, api_hash, phone)
+            ip, port = request.form['ip'], request.form['port']
+            Telegram.create_tmp_session(api_id, api_hash, phone, ip, port)
 
         # Download list chats
         if action == 'get_list_chats':

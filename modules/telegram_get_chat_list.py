@@ -1,11 +1,16 @@
 from telethon import TelegramClient
-import sys
+from telegram import Telegram
+
+import sys, socks
 
 api_id, api_hash, session_file = int(sys.argv[1]), sys.argv[2], sys.argv[3]
 
 
 # Create bot
-client = TelegramClient(session_file, api_id, api_hash)
+tg = Telegram(api_id, api_hash, session_file)
+proxy = tg.get_socks()
+
+client = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port']))
 client.start()
 
 chats = ['Link\tID\tTitle']

@@ -1,11 +1,15 @@
 from telethon import TelegramClient, sync, functions
 from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.tl.functions.users import GetFullUserRequest
+from telegram import Telegram
 from pymongo import MongoClient
-import sys, configparser as cp
+import sys, configparser as cp, socks
 
+tg = Telegram( int(sys.argv[1]), sys.argv[2], sys.argv[3])
 
-with sync.TelegramClient(sys.argv[3], int(sys.argv[1]), sys.argv[2]) as client:
+proxy = tg.get_socks()
+
+with sync.TelegramClient(sys.argv[3], int(sys.argv[1]), sys.argv[2], proxy=(socks.SOCKS5, proxy['ip'], proxy['port'])) as client:
     try:
         # Update first_name, last_name, about
         client(UpdateProfileRequest(
@@ -46,12 +50,7 @@ with sync.TelegramClient(sys.argv[3], int(sys.argv[1]), sys.argv[2]) as client:
     config.read('config.ini')
 
     # Create connection
-    client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
-            login=config['MONGO']['login'],
-            password=config['MONGO']['password'],
-            host=config['MONGO']['host'],
-            port=config['MONGO']['port']
-            ))
+    client = Telegram.get_mongo_client()
     db = client['tg']['accounts']
 
     db.update_one(

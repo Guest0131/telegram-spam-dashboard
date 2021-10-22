@@ -1,17 +1,21 @@
 from telethon import TelegramClient, sync, events, utils
 from telethon.tl.types import Channel, User as tUser
 from pymongo import MongoClient
-
+from threading import Thread
 from telegram import Telegram
 from user import User
 
-import sys, os, time, random, asyncio, threading
+import sys, os, time, random, asyncio, socks
 
 api_id, api_hash, session_file, admin_login = int(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
 
 
 # Create bot
-client = TelegramClient(session_file, api_id, api_hash)
+tg = Telegram(api_id, api_hash, session_file)
+proxy = tg.get_socks()
+
+client = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port']))
+
 
 async def send_user_message(response, sender, text, tg):
     time.sleep(random.randint(
@@ -52,34 +56,30 @@ async def normal_handler(event):
 
     response = User.get_response(admin_login)
 
-    tg = Telegram(api_id, api_hash, session_file)
+    
     tg.update_pid(os.getpid())
     tg.update_status('work')
     
     chat = await event.get_chat()
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    
     if type(chat) == tUser:
         print(chat.username)
         sender = await event.get_input_sender()
         message_arr = response['single']['text'].split('\n')
-        # await send_user_message(response, sender, message_arr[random.randint(0, len(message_arr) - 1)],tg)
+
+        _thread = Thread(target=beetwen_callback, args=('user', response, sender, message_arr[random.randint(0, len(message_arr) - 1)], tg))
         
-        asyncio.get_event_loop().create_task(send_user_message(response, sender, message_arr[random.randint(0, len(message_arr) - 1)], tg))
-        # _thread = threading.Thread(target=asyncio.run, args=()
-        # _thread.start()
         
     elif type(chat) == Channel:
         chat = await event.get_chat()
-        
         print(chat.username)
 
         message_arr = response['group']['text'].split('\n')
-        asyncio.get_event_loop().create_task(send_user_message(response, chat.username, message_arr[random.randint(0, len(message_arr) - 1)], tg))
-        # _thread = threading.Thread(target=asyncio.run, args=(beetwen_callback('group',response, chat.username, message_arr[random.randint(0, len(message_arr) - 1)], tg)))
-        # _thread.start()
-        # await send_chat_message(response, chat.username, message_arr[random.randint(0, len(message_arr) - 1)])
 
+        _thread = Thread(target=beetwen_callback, args=('group', response, chat.username, message_arr[random.randint(0, len(message_arr) - 1)], tg))
+        # await send_user_message(response, chat.username, message_arr[random.randint(0, len(message_arr) - 1)], tg)
+    
+    _thread.start()
         
 
 client.start()

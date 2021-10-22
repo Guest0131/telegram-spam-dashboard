@@ -4,27 +4,28 @@ from pymongo import MongoClient
 
 from  telegram import Telegram
 
-import configparser as cp, sys, time,random
+import configparser as cp, sys, time, socks
 
 
 
 api_id, api_hash, session_file, owner = int(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
+ip, port = sys.argv[5], int(sys.argv[6])
 
 # Load config 
 config = cp.ConfigParser()
 config.read('config.ini')
 
 # Create connection
-client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
-            login=config['MONGO']['login'],
-            password=config['MONGO']['password'],
-            host=config['MONGO']['host'],
-            port=config['MONGO']['port']
-            ))
+client = Telegram.get_mongo_client()
 db = client['tg']['accounts']
 
-clientTg = TelegramClient(session_file, api_id, api_hash)
+clientTg = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, ip, port))
 clientTg.start()
+
+count_chats = 0
+for dialog in clientTg.iter_dialogs():
+    if dialog.is_channel:
+        count_chats += 1
 
 client_info = clientTg(GetFullUserRequest(id=clientTg.get_me().id))
 db.insert_one({
@@ -39,5 +40,9 @@ db.insert_one({
     'phone' : str(client_info.user.phone)           if client_info.user.phone      != None else "",
     'about' : str(client_info.about)                if client_info.about           != None else "",
     'owner_login' : owner,
-    'group_count' : 0
+    'group_count' : count_chats,
+    'proxy' : {
+        'ip' : ip,
+        'port' : port
+    }
 })

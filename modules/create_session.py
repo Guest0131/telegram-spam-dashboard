@@ -1,17 +1,16 @@
 from telethon import TelegramClient
 from pymongo import MongoClient
 
-import sys, configparser as cp, time
+import sys, configparser as cp, time, socks
 
 
 api_id, api_hash, phone = int(sys.argv[1]), sys.argv[2], sys.argv[3]
+ip, port =  sys.argv[4], int(sys.argv[5])
+
 session_file = f'sessions/{api_id}_{api_hash}.session'
-clientTg = TelegramClient(session_file, api_id, api_hash)
+clientTg = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, ip, port))
 
 async def main():
-    await clientTg.connect()
-    await clientTg.send_code_request(phone)
-
     # Load config 
     config = cp.ConfigParser()
     config.read('config.ini')
@@ -25,14 +24,24 @@ async def main():
             ))
     db = client['tg']['tmp']
 
+    
+
     if db.find_one({'api_id': api_id, 'api_hash': api_hash}) is None:
         db.insert_one({'api_id': api_id, 'api_hash': api_hash})
+    else:
+        db.delete_one({'api_id': api_id, 'api_hash': api_hash})
+        time.sleep(2)
+        db.insert_one({'api_id': api_id, 'api_hash': api_hash})
+
+
+    await clientTg.connect()
+    await clientTg.send_code_request(phone)
     
     while 'code' not in db.find_one({'api_id': api_id, 'api_hash': api_hash}):
         time.sleep(1)
-    
-    await clientTg.sign_in(phone, db.find_one({'api_id': api_id, 'api_hash': api_hash})['code'])
-    print(f'Create session for {phone}')
+    if db.find_one({'api_id': api_id, 'api_hash': api_hash})['code'] != '-1':
+        await clientTg.sign_in(phone, db.find_one({'api_id': api_id, 'api_hash': api_hash})['code'])
+        print(f'Create session for {phone}')
     db.delete_one({'api_id': api_id, 'api_hash': api_hash})
     client.close()
 
