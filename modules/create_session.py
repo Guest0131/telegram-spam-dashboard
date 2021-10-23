@@ -5,10 +5,14 @@ import sys, configparser as cp, time, socks
 
 
 api_id, api_hash, phone = int(sys.argv[1]), sys.argv[2], sys.argv[3]
-ip, port =  sys.argv[4], int(sys.argv[5])
+ip, port, login, password =  sys.argv[4], int(sys.argv[5]), sys.argv[6], sys.argv[7]
 
 session_file = f'sessions/{api_id}_{api_hash}.session'
-clientTg = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, ip, port))
+
+if login != ''  and password != '':
+    clientTg = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, ip, port, login, password))
+else:
+    clientTg = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, ip, port))
 
 async def main():
     # Load config 

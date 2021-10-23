@@ -11,7 +11,12 @@ tg = Telegram(api_id, api_hash, session_file)
 tg.update_status('group')
 proxy = tg.get_socks()
 
-client = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port']))
+
+if proxy['login'] != ''  and proxy['password'] != '':
+    client = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port'], proxy['login'], proxy['password']))
+else:
+    client = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port']))
+
 client.connect()
 
 with open(chats_file, 'r') as f:

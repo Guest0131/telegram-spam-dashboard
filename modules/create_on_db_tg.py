@@ -9,7 +9,7 @@ import configparser as cp, sys, time, socks
 
 
 api_id, api_hash, session_file, owner = int(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
-ip, port = sys.argv[5], int(sys.argv[6])
+ip, port, login, password = sys.argv[5], int(sys.argv[6]), sys.argv[7], sys.argv[8]
 
 # Load config 
 config = cp.ConfigParser()
@@ -19,7 +19,11 @@ config.read('config.ini')
 client = Telegram.get_mongo_client()
 db = client['tg']['accounts']
 
-clientTg = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, ip, port))
+if login != ''  and password != '':
+    clientTg = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, ip, port, login, password))
+else:
+    clientTg = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, ip, port))
+
 clientTg.start()
 
 count_chats = 0
@@ -43,6 +47,8 @@ db.insert_one({
     'group_count' : count_chats,
     'proxy' : {
         'ip' : ip,
-        'port' : port
+        'port' : port,
+        'login' : login,
+        'password' : password
     }
 })

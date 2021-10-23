@@ -14,7 +14,11 @@ api_id, api_hash, session_file, admin_login = int(sys.argv[1]), sys.argv[2], sys
 tg = Telegram(api_id, api_hash, session_file)
 proxy = tg.get_socks()
 
-client = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port']))
+if proxy['login'] != ''  and proxy['password'] != '':
+    client = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port'], proxy['login'], proxy['password']))
+else:
+    client = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port']))
+
 
 
 async def send_user_message(response, sender, text, tg):

@@ -10,7 +10,12 @@ api_id, api_hash, session_file = int(sys.argv[1]), sys.argv[2], sys.argv[3]
 tg = Telegram(api_id, api_hash, session_file)
 proxy = tg.get_socks()
 
-client = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port']))
+
+if proxy['login'] != ''  and proxy['password'] != '':
+    client = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port'], proxy['login'], proxy['password']))
+else:
+    client = TelegramClient(session_file, api_id, api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port']))
+
 client.start()
 
 chats = ['Link\tID\tTitle']

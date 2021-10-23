@@ -43,10 +43,24 @@
                             <input name='api_hash' type="text" class="form-control" placeholder="API_HASH" required>
                         </div>
                         <label for="ip">Proxy Settings <span style="color:red">(ONLY IPV4 SOCKS5!)</span></label>
-                        <div class="input-group mb-3">
+                        <div class="input-group mb-2">
                             <input name='ip' type="text" class="form-control" placeholder="Host ip" required id="ip">
-                            <input name='port' type="text" class="form-control" placeholder="Port" required>
+                            <input name='port' type="text" class="form-control" placeholder="Port" required> 
                         </div>
+                        <div class="input-group mb-3" id="privateProxyBlock" style="display:none">
+                            <input name='login' type="text" class="form-control privateProxy" placeholder="Login" disabled>
+                            <input name='password' type="text" class="form-control privateProxy" placeholder="Password" disabled> 
+                        </div>
+                        
+
+                        <div class="input-group mb-3" style="margin-left:20px;">
+                            <input class="form-check-input" type="checkbox" id="privateProxy">
+                            <label class="form-check-label" for="privateProxy">
+                              Private proxy
+                            </label>
+                        </div>
+                        
+                        
 
                         <div class="form-group">
                             <div class="row">
@@ -70,8 +84,16 @@
         </div>
     </div>
 
+    <!-- Required Js [Start] -->
+    <script src="{{ url_for( 'static', filename='js/vendor-all.min.js')}}"></script>
+    <script src="{{ url_for( 'static', filename='plugins/bootstrap/js/bootstrap.min.js')}}"></script>
+    <script src="{{ url_for( 'static', filename='js/pcoded.min.js')}}"></script>
+    <!-- Required Js [End]  -->
+
     <!-- Button action [Start] -->
     <script>
+        
+
         function createTmpSession() {
             var button = $('button')[0];
 
@@ -81,6 +103,10 @@
 
             var ip = $('input[name="ip"]')[0].value;
             var port = $('input[name="port"]')[0].value
+
+
+            var login = $('input[name="login"]')[0].value
+            var password =$('input[name="password"]')[0].value
 
             if ($('input[name="tg_code"]').length == 0) {
                 $('div[class="form-group"]').after(`
@@ -98,19 +124,32 @@
                     'api_hash' : api_hash,
                     'phone' : phone,
                     'ip' : ip,
-                    'port' :port
+                    'port' :port,
+                    'login' : login,
+                    'password' : password
                 }
             })
 
         }
+
+
+        $('#privateProxy').click(function () {
+            var checked = this.checked;
+            console.log(checked);
+            $('.privateProxy').each(function () {
+                $(this).prop('disabled', !checked);
+            });
+            if (checked) {
+                $('#privateProxyBlock')[0].style = ''
+            } else {
+                $('#privateProxyBlock')[0].style = 'display:none'
+            }
+           
+        });
     </script>
     <!-- Button action [End] -->
 
-    <!-- Required Js [Start] -->
-    <script src="{{ url_for( 'static', filename='js/vendor-all.min.js')}}"></script>
-    <script src="{{ url_for( 'static', filename='plugins/bootstrap/js/bootstrap.min.js')}}"></script>
-    <script src="{{ url_for( 'static', filename='js/pcoded.min.js')}}"></script>
-    <!-- Required Js [End]  -->
+    
 
 
 </body>

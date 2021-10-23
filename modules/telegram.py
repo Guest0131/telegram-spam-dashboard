@@ -19,7 +19,7 @@ class Telegram:
         self.api_id = int(api_id)
         self.api_hash = api_hash
         
-    def create_on_db(self, owner, ip, port):
+    def create_on_db(self, owner, ip, port, login, password):
         """
         Register on db
 
@@ -31,16 +31,15 @@ class Telegram:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
-            login=config['MONGO']['login'],
-            password=config['MONGO']['password'],
-            host=config['MONGO']['host'],
-            port=config['MONGO']['port']
-            ))
+        client = self.get_mongo_client()
         db = client['tg']['accounts']
 
         if db.find_one({'api_id' : self.api_id, 'api_hash' : self.api_hash}) == None:
-            subprocess.Popen([sys.executable, 'modules/create_on_db_tg.py', str(self.api_id), self.api_hash, self.session_file, owner, ip, port])
+            subprocess.Popen([
+                sys.executable, 'modules/create_on_db_tg.py', 
+                str(self.api_id), self.api_hash, self.session_file, owner, 
+                ip, port, login, password
+                ])
         client.close()
 
     def run(self, login):
@@ -198,7 +197,12 @@ class Telegram:
             username ([string]): username
         """ 
         proxy = self.get_socks()
-        client = await TelegramClient(self.session_file, self.api_id, self.api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port']))
+        
+        if proxy['login'] != ''  and proxy['password'] != '':
+            client = TelegramClient(self.session_file, self.api_id, self.api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port'], proxy['login'], proxy['password']))
+        else:
+            client = TelegramClient(self.session_file, self.api_id, self.api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port']))
+
         result = client(await functions.account.CheckUsernameRequest(
             username=sys.argv[4]
         ))
@@ -227,11 +231,11 @@ class Telegram:
             )
 
     @staticmethod
-    def create_tmp_session(api_id, api_hash, phone, ip, port):
+    def create_tmp_session(api_id, api_hash, phone, ip, port, login, password):
         subprocess.Popen(
                 [
                     sys.executable, 'modules/create_session.py',
-                    str(api_id), api_hash, phone, ip, str(port)
+                    str(api_id), api_hash, phone, ip, str(port), login, password
                 ]
             )
 
