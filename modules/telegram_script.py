@@ -38,7 +38,8 @@ async def send_user_message(response, sender, text, tg):
         sender, 
         text
     )
-    tg.update_count()
+    tgс = Telegram(api_id, api_hash, session_file)
+    tgс.update_count()
 
 async def send_chat_message(response, sender, text, tg):
     time.sleep(random.randint(
@@ -50,7 +51,8 @@ async def send_chat_message(response, sender, text, tg):
         entity=sender, 
         message=text
     )
-    tg.update_count()
+    tgс = Telegram(api_id, api_hash, session_file)
+    tgс.update_count()
 
 def beetwen_callback(type, response, sender, text, tg):
     loop = asyncio.new_event_loop()

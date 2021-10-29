@@ -92,7 +92,7 @@ class Telegram:
         
         # Update count
         db.update_one({
-            'api_id' : self.api_id,
+            'api_id' : int(self.api_id),
             'api_hash': self.api_hash
         }, {
             '$inc' : {
