@@ -1,7 +1,7 @@
 from telethon import TelegramClient
 from telegram import Telegram
 
-import sys, socks
+import sys, python_socks
 
 api_id, api_hash, session_file = int(sys.argv[1]), sys.argv[2], sys.argv[3]
 
@@ -12,7 +12,14 @@ proxy = tg.get_socks()
 
 
 if proxy['login'] != ''  and proxy['password'] != '':
-    client = TelegramClient(session_file, api_id, api_hash, proxy=("socks5", proxy['ip'], proxy['port'], proxy['login'], proxy['password']))
+    client = TelegramClient(session_file, api_id, api_hash, proxy={
+            'proxy_type': 'socks5',
+            'addr': proxy['ip'],
+            'port': proxy['port'],
+            'username': proxy['login'],
+            'password': proxy['password'],
+            'rdns': True   
+        })
 else:
     client = TelegramClient(session_file, api_id, api_hash, proxy=("socks5", proxy['ip'], proxy['port']))
 

@@ -13,12 +13,12 @@ if login != ''  and password != '':
     clientTg = TelegramClient(
         session_file, api_id, api_hash,
         proxy={
-            'proxy_type': 'socks5', # (mandatory) protocol to use (see above)
-            'addr': ip,      # (mandatory) proxy IP address
-            'port': port,           # (mandatory) proxy port number
-            'username': login,      # (optional) username if the proxy requires auth
-            'password': password,      # (optional) password if the proxy requires auth
-            'rdns': True            # (optional) whether to use remote or local resolve, default remote
+            'proxy_type': 'socks5',
+            'addr': ip,
+            'port': port,
+            'username': login,
+            'password': password,
+            'rdns': True   
         })
 else:
     clientTg = TelegramClient(
