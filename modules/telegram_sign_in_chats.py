@@ -13,7 +13,14 @@ proxy = tg.get_socks()
 
 
 if proxy['login'] != ''  and proxy['password'] != '':
-    client = TelegramClient(session_file, api_id, api_hash, proxy=("socks5", proxy['ip'], proxy['port'], proxy['login'], proxy['password']))
+    client = TelegramClient(session_file, api_id, api_hash, proxy={
+            'proxy_type': 'socks5',
+            'addr': proxy['ip'],
+            'port': proxy['port'],
+            'username': proxy['login'],
+            'password': proxy['password'],
+            'rdns': True   
+        })
 else:
     client = TelegramClient(session_file, api_id, api_hash, proxy=("socks5", proxy['ip'], proxy['port']))
 

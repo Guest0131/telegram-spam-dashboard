@@ -10,7 +10,14 @@ tg = Telegram( int(sys.argv[1]), sys.argv[2], sys.argv[3])
 proxy = tg.get_socks()
 
 if proxy['login'] != ''  and proxy['password'] != '':
-    proxyArr=("socks5", proxy['ip'], proxy['port'], proxy['login'], proxy['password'])
+    proxyArr={
+            'proxy_type': 'socks5',
+            'addr': proxy['ip'],
+            'port': proxy['port'],
+            'username': proxy['login'],
+            'password': proxy['password'],
+            'rdns': True   
+        }
 else:
     proxyArr=("socks5", proxy['ip'], proxy['port'])
 

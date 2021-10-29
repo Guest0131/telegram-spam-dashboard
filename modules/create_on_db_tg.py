@@ -20,7 +20,14 @@ client = Telegram.get_mongo_client()
 db = client['tg']['accounts']
 
 if login != ''  and password != '':
-    clientTg = TelegramClient(session_file, api_id, api_hash, proxy=("socks5", ip, port, login, password))
+    clientTg = TelegramClient(session_file, api_id, api_hash, proxy={
+            'proxy_type': 'socks5',
+            'addr': ip,
+            'port': port,
+            'username': login,
+            'password': password,
+            'rdns': True   
+        })
 else:
     clientTg = TelegramClient(session_file, api_id, api_hash, proxy=("socks5", ip, port))
 

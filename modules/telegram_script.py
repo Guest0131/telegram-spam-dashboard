@@ -5,7 +5,7 @@ from threading import Thread
 from telegram import Telegram
 from user import User
 
-import sys, os, time, random, asyncio, socks
+import sys, os, time, random, asyncio, python_socks
 
 api_id, api_hash, session_file, admin_login = int(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
 
@@ -15,7 +15,14 @@ tg = Telegram(api_id, api_hash, session_file)
 proxy = tg.get_socks()
 
 if proxy['login'] != ''  and proxy['password'] != '':
-    client = TelegramClient(session_file, api_id, api_hash, proxy=("socks5", proxy['ip'], proxy['port'], proxy['login'], proxy['password']))
+    client = TelegramClient(session_file, api_id, api_hash, proxy={
+            'proxy_type': 'socks5',
+            'addr': proxy['ip'],
+            'port': proxy['port'],
+            'username': proxy['login'],
+            'password': proxy['password'],
+            'rdns': True   
+        })
 else:
     client = TelegramClient(session_file, api_id, api_hash, proxy=("socks5", proxy['ip'], proxy['port']))
 
