@@ -5,7 +5,7 @@ from threading import Thread
 from telegram import Telegram
 from user import User
 
-import sys, os, time, random, asyncio, python_socks
+import sys, os, time, random, asyncio, python_socks, configparser as cp
 
 api_id, api_hash, session_file, admin_login = int(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
 
@@ -59,9 +59,19 @@ def beetwen_callback(type, response, sender, text, api_id, api_hash, session_fil
     else:
         loop.run_until_complete(send_user_message(response,sender, text))
 
-    mc = Telegram.get_mongo_client()
-    db = mc['tg']['accounts']
-        
+    # Load config 
+    config = cp.ConfigParser()
+    config.read('config.ini')
+
+    # Create connection
+    mclient = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
+        login=config['MONGO']['login'],
+        password=config['MONGO']['password'],
+        host=config['MONGO']['host'],
+        port=config['MONGO']['port']
+        ))
+    db = mclient['tg']['accounts']
+    
     # Update count
     db.update_one({
         'api_id' : int(api_id),
@@ -71,6 +81,8 @@ def beetwen_callback(type, response, sender, text, api_id, api_hash, session_fil
             'count_message' : 1
         }
     }, upsert=False)
+
+    mclient.close()
     loop.close()
 
     
