@@ -199,9 +199,9 @@ class Telegram:
         proxy = self.get_socks()
         
         if proxy['login'] != ''  and proxy['password'] != '':
-            client = TelegramClient(self.session_file, self.api_id, self.api_hash, proxy=socks.set_proxy(socks.SOCKS5, proxy['ip'], proxy['port'], username=proxy['login'], password=proxy['password']))
+            client = TelegramClient(self.session_file, self.api_id, self.api_hash, proxy=("socks5", proxy['ip'], proxy['port'], proxy['login'], proxy['password']))
         else:
-            client = TelegramClient(self.session_file, self.api_id, self.api_hash, proxy=(socks.SOCKS5, proxy['ip'], proxy['port']))
+            client = TelegramClient(self.session_file, self.api_id, self.api_hash, proxy=("socks5", proxy['ip'], proxy['port']))
 
         result = client(await functions.account.CheckUsernameRequest(
             username=sys.argv[4]
