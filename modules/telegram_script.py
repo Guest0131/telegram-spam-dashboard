@@ -28,7 +28,7 @@ else:
 
 
 
-async def send_user_message(response, sender, text, tg):
+async def send_user_message(response, sender, text):
     time.sleep(random.randint(
         int(response['single']['start']),
         int(response['single']['end'])
@@ -38,7 +38,7 @@ async def send_user_message(response, sender, text, tg):
         sender, 
         text
     )
-async def send_chat_message(response, sender, text, tg):
+async def send_chat_message(response, sender, text):
     time.sleep(random.randint(
             int(response['group']['start']),
             int(response['group']['end'])
@@ -50,18 +50,21 @@ async def send_chat_message(response, sender, text, tg):
     )
     
 
-def beetwen_callback(type, response, sender, text, tg):
+def beetwen_callback(type, response, sender, text, api_id, api_hash, session_file):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-
+    
     if type == 'group':
-        loop.run_until_complete(send_chat_message(response,sender, text, tg))
+        loop.run_until_complete(send_chat_message(response,sender, text))
     else:
-        loop.run_until_complete(send_user_message(response,sender, text, tg))
+        loop.run_until_complete(send_user_message(response,sender, text))
+        
+    tg = Telegram(api_id, api_hash, session_file)
+    tg.update_count()
     loop.close()
 
-    tgс = Telegram(api_id, api_hash, session_file)
-    tgс.update_count()
+    
+    
 
 @client.on(events.NewMessage())
 async def normal_handler(event):
@@ -79,7 +82,10 @@ async def normal_handler(event):
         sender = await event.get_input_sender()
         message_arr = response['single']['text'].split('\n')
 
-        _thread = Thread(target=beetwen_callback, args=('user', response, sender, message_arr[random.randint(0, len(message_arr) - 1)], tg))
+        _thread = Thread(target=beetwen_callback, args=(
+            'user', 
+            response, sender, message_arr[random.randint(0, len(message_arr) - 1)], 
+            api_id, api_hash, session_file))
         
         
     elif type(chat) == Channel:
@@ -88,8 +94,10 @@ async def normal_handler(event):
 
         message_arr = response['group']['text'].split('\n')
 
-        _thread = Thread(target=beetwen_callback, args=('group', response, chat.username, message_arr[random.randint(0, len(message_arr) - 1)], tg))
-        # await send_user_message(response, chat.username, message_arr[random.randint(0, len(message_arr) - 1)], tg)
+        _thread = Thread(target=beetwen_callback, args=(
+            'group', 
+            response, chat.username, message_arr[random.randint(0, len(message_arr) - 1)], 
+            api_id, api_hash, session_file))
     
     _thread.start()
         
