@@ -1,7 +1,7 @@
-from telethon import TelegramClient
+from telethon import TelegramClient, connection
 from pymongo import MongoClient
 
-import sys, configparser as cp, time, socks
+import sys, configparser as cp, time, python_socks as ps
 
 
 api_id, api_hash, phone = int(sys.argv[1]), sys.argv[2], sys.argv[3]
@@ -10,9 +10,13 @@ ip, port, login, password =  sys.argv[4], int(sys.argv[5]), sys.argv[6], sys.arg
 session_file = f'sessions/{api_id}_{api_hash}.session'
 
 if login != ''  and password != '':
-    clientTg = TelegramClient(session_file, api_id, api_hash, proxy=("socks5", ip, port, login, password))
+    clientTg = TelegramClient(
+        session_file, api_id, api_hash,
+        proxy=(ps.ProxyType.SOCKS5, ip, port, login, password))
 else:
-    clientTg = TelegramClient(session_file, api_id, api_hash, proxy=("socks5", ip, port))
+    clientTg = TelegramClient(
+        session_file, api_id, api_hash, 
+        proxy=(ps.ProxyType.SOCKS5, ip, port))
 
 async def main():
     # Load config 
