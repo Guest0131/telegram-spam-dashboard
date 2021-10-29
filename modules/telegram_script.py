@@ -58,9 +58,19 @@ def beetwen_callback(type, response, sender, text, api_id, api_hash, session_fil
         loop.run_until_complete(send_chat_message(response,sender, text))
     else:
         loop.run_until_complete(send_user_message(response,sender, text))
+
+    mc = Telegram.get_mongo_client()
+    db = mc['tg']['accounts']
         
-    tg = Telegram(api_id, api_hash, session_file)
-    tg.update_count()
+    # Update count
+    db.update_one({
+        'api_id' : int(api_id),
+        'api_hash': api_hash
+    }, {
+        '$inc' : {
+            'count_message' : 1
+        }
+    }, upsert=False)
     loop.close()
 
     
