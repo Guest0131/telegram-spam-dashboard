@@ -38,7 +38,7 @@ for chat in data:
         ))
         print(channelInfo.username)
         
-        tg.inc_group_count()
+        tg.update_group_count()
     except:
         pass
     time.sleep(random.randint(start, end))

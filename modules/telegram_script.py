@@ -33,17 +33,30 @@ async def send_user_message(response, sender, text):
         int(response['single']['start']),
         int(response['single']['end'])
     ))
-
+    
+    count_chats = 0
+    for dialog in client.iter_dialogs():
+        if dialog.is_channel:
+            count_chats += 1
+    tg.update_group_count(count_chats)
+    
     await client.send_message(
         sender, 
         text
     )
+    
 async def send_chat_message(response, sender, text):
     time.sleep(random.randint(
             int(response['group']['start']),
             int(response['group']['end'])
         ))
-    
+
+    count_chats = 0
+    for dialog in client.iter_dialogs():
+        if dialog.is_channel:
+            count_chats += 1
+    tg.update_group_count(count_chats)
+
     await client.send_message(
         entity=sender, 
         message=text
@@ -58,31 +71,7 @@ def beetwen_callback(type, response, sender, text, api_id, api_hash, session_fil
         loop.run_until_complete(send_chat_message(response,sender, text))
     else:
         loop.run_until_complete(send_user_message(response,sender, text))
-
-    # Load config 
-    config = cp.ConfigParser()
-    config.read('config.ini')
-
-    # Create connection
-    mclient = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
-        login=config['MONGO']['login'],
-        password=config['MONGO']['password'],
-        host=config['MONGO']['host'],
-        port=config['MONGO']['port']
-        ))
-    db = mclient['tg']['accounts']
     
-    # Update count
-    db.update_one({
-        'api_id' : int(api_id),
-        'api_hash': api_hash
-    }, {
-        '$inc' : {
-            'count_message' : 1
-        }
-    }, upsert=False)
-
-    mclient.close()
     loop.close()
 
     

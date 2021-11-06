@@ -26,9 +26,6 @@ class Telegram:
         Args:
             owner ([string]): Owner login
         """
-        # Load config 
-        config = cp.ConfigParser()
-        config.read('config.ini')
 
         # Create connection
         client = self.get_mongo_client()
@@ -77,17 +74,8 @@ class Telegram:
         """
         Update count. Increment field `count_message` once
         """
-        # Load config 
-        config = cp.ConfigParser()
-        config.read('config.ini')
-
         # Create connection
-        client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
-            login=config['MONGO']['login'],
-            password=config['MONGO']['password'],
-            host=config['MONGO']['host'],
-            port=config['MONGO']['port']
-            ))
+        client = Telegram.get_mongo_client()
         db = client['tg']['accounts']
         
         # Update count
@@ -109,17 +97,8 @@ class Telegram:
         Args:
             pid ([int]): New PID
         """
-        # Load config 
-        config = cp.ConfigParser()
-        config.read('config.ini')
-
         # Create connection
-        client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
-            login=config['MONGO']['login'],
-            password=config['MONGO']['password'],
-            host=config['MONGO']['host'],
-            port=config['MONGO']['port']
-            ))
+        client = Telegram.get_mongo_client()
         db = client['tg']['accounts']
         
         # Update count
@@ -141,17 +120,8 @@ class Telegram:
         Returns:
             [`int` or `None`]: Return `int`, if pid is available else `None`
         """
-        # Load config 
-        config = cp.ConfigParser()
-        config.read('config.ini')
-
         # Create connection
-        client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
-            login=config['MONGO']['login'],
-            password=config['MONGO']['password'],
-            host=config['MONGO']['host'],
-            port=config['MONGO']['port']
-            ))
+        client = Telegram.get_mongo_client()
         db = client['tg']['accounts']
 
         query_resp = db.find_one({
@@ -178,12 +148,7 @@ class Telegram:
         config.read('config.ini')
 
         # Create connection
-        client = MongoClient("mongodb://{login}:{password}@{host}:{port}".format(
-            login=config['MONGO']['login'],
-            password=config['MONGO']['password'],
-            host=config['MONGO']['host'],
-            port=config['MONGO']['port']
-            ))
+        client = Telegram.get_mongo_client()
         db = client['tg']['accounts']
 
         return list(db.find({'owner_login' : login}))
@@ -332,9 +297,12 @@ class Telegram:
             )
 
 
-    def inc_group_count(self):
+    def update_group_count(self, new_count = 0):
         """
-        Increment group count
+        Update count groups
+
+        Args:
+            new_count (int, optional): New count value for group_count. Defaults to 0.
         """
         # Create connection
         client = self.get_mongo_client()
@@ -342,7 +310,7 @@ class Telegram:
 
         db.update(
             {'session_file' : self.session_file},
-            {'$inc': { 'group_count' : 1 } }
+            {'$set': { 'group_count' : new_count } }
         )
         
     def update_status(self, status):
